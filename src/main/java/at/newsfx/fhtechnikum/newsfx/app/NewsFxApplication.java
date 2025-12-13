@@ -16,9 +16,16 @@ public class NewsFxApplication extends Application {
                 Objects.requireNonNull(getClass().getResource("/view/MainView.fxml"))
         );
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 1000, 700);
+
         stage.setTitle("NewsFx");
+        stage.setMinWidth(900);
+        stage.setMinHeight(600);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
