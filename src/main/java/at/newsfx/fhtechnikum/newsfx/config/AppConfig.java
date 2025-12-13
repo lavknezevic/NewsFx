@@ -54,13 +54,11 @@ public final class AppConfig {
         return getRequired("ui.window.title");
     }
 
-    public static String newsApiBaseUrl() {
-        return getRequired("news.api.baseUrl");
+    public static String rssFeedUrl() {
+        return getRequired("news.rss.feedUrl");
     }
 
-    public static int newsApiTimeoutSeconds() {
-        return Integer.parseInt(
-                getRequired("news.api.timeoutSeconds")
-        );
+    public static int httpTimeoutSeconds() {
+        return Integer.parseInt(getRequired("news.http.timeoutSeconds"));
     }
 }
