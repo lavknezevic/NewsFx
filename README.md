@@ -1,2 +1,2 @@
 # NewsFx
-JavaFx News Application for Enterprise use-case's
+JavaFx News Application for Enterprise use-case's 
