@@ -7,6 +7,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 
 public class NewsFxApplication extends Application {
 
@@ -15,6 +17,10 @@ public class NewsFxApplication extends Application {
         Parent root = ViewManager.load(View.MAIN);
 
         Scene scene = new Scene(root, 1000, 700);
+
+        scene.getStylesheets().add(
+                Objects.requireNonNull(getClass().getResource("/css/application.css")).toExternalForm()
+        );
 
         stage.setTitle("NewsFx");
         stage.setMinWidth(900);

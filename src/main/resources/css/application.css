@@ -1,0 +1,24 @@
+.root {
+    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #f5f6fa;
+}
+
+.headline {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2f3640;
+}
+
+.label {
+    -fx-text-fill: #353b48;
+}
+
+.border-pane {
+    -fx-padding: 16;
+}
+
+.button {
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+}
