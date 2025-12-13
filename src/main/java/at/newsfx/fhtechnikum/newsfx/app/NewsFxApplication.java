@@ -1,5 +1,6 @@
 package at.newsfx.fhtechnikum.newsfx.app;
 
+import at.newsfx.fhtechnikum.newsfx.config.AppConfig;
 import at.newsfx.fhtechnikum.newsfx.view.View;
 import at.newsfx.fhtechnikum.newsfx.view.ViewManager;
 import javafx.application.Application;
@@ -22,7 +23,7 @@ public class NewsFxApplication extends Application {
                 Objects.requireNonNull(getClass().getResource("/css/application.css")).toExternalForm()
         );
 
-        stage.setTitle("NewsFx");
+        stage.setTitle(AppConfig.windowTitle());
         stage.setMinWidth(900);
         stage.setMinHeight(600);
         stage.setScene(scene);
