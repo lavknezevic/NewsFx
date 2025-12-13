@@ -1,5 +1,6 @@
 package at.newsfx.fhtechnikum.newsfx.view;
 
+import at.newsfx.fhtechnikum.newsfx.controller.BaseController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -17,7 +18,15 @@ public class ViewManager {
             FXMLLoader loader = new FXMLLoader(
                     ViewManager.class.getResource(view.getFxmlPath())
             );
-            return loader.load();
+
+            Parent root = loader.load();
+
+            Object controller = loader.getController();
+            if (controller instanceof BaseController baseController) {
+                baseController.onViewLoaded();
+            }
+
+            return root;
         } catch (IOException e) {
             throw new RuntimeException(
                     "Failed to load view: " + view.name(), e
