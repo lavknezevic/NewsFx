@@ -1,4 +1,4 @@
-package at.newsfx.fhtechnikum.newsfx.util;
+package at.newsfx.fhtechnikum.newsfx.util.error;
 
 import javafx.scene.control.Alert;
 

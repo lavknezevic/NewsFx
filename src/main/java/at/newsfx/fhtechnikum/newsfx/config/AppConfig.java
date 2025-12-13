@@ -1,6 +1,6 @@
 package at.newsfx.fhtechnikum.newsfx.config;
 
-import at.newsfx.fhtechnikum.newsfx.util.TechnicalException;
+import at.newsfx.fhtechnikum.newsfx.util.error.TechnicalException;
 
 import java.io.InputStream;
 import java.util.Properties;

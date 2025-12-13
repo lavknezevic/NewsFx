@@ -1,6 +1,7 @@
 package at.newsfx.fhtechnikum.newsfx.app;
 
 import at.newsfx.fhtechnikum.newsfx.config.AppConfig;
+import at.newsfx.fhtechnikum.newsfx.util.resource.ResourceUtil;
 import at.newsfx.fhtechnikum.newsfx.view.View;
 import at.newsfx.fhtechnikum.newsfx.view.ViewManager;
 import javafx.application.Application;
@@ -20,7 +21,7 @@ public class NewsFxApplication extends Application {
         Scene scene = new Scene(root, 1000, 700);
 
         scene.getStylesheets().add(
-                Objects.requireNonNull(getClass().getResource("/css/application.css")).toExternalForm()
+                ResourceUtil.get("/css/application.css").toExternalForm()
         );
 
         stage.setTitle(AppConfig.windowTitle());

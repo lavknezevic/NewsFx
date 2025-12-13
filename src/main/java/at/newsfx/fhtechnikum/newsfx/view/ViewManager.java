@@ -1,6 +1,7 @@
 package at.newsfx.fhtechnikum.newsfx.view;
 
 import at.newsfx.fhtechnikum.newsfx.controller.BaseController;
+import at.newsfx.fhtechnikum.newsfx.util.resource.ResourceUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,7 +17,7 @@ public class ViewManager {
     public static Parent load(View view) {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    ViewManager.class.getResource(view.getFxmlPath())
+                    ResourceUtil.get(view.getFxmlPath())
             );
 
             Parent root = loader.load();
