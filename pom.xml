@@ -69,7 +69,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                at.newsfx.fhtechnikum.newsfx/at.newsfx.fhtechnikum.newsfx.HelloApplication
+                                at.newsfx.fhtechnikum.newsfx/at.newsfx.fhtechnikum.newsfx.app.NewsFxApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

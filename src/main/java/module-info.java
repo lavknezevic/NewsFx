@@ -3,6 +3,7 @@ module at.newsfx.fhtechnikum.newsfx {
     requires javafx.fxml;
 
 
-    opens at.newsfx.fhtechnikum.newsfx to javafx.fxml;
-    exports at.newsfx.fhtechnikum.newsfx;
+    opens at.newsfx.fhtechnikum.newsfx.controller to javafx.fxml;
+
+    exports at.newsfx.fhtechnikum.newsfx.app;
 }
