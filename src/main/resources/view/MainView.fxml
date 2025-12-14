@@ -3,6 +3,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.ListView?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="at.newsfx.fhtechnikum.newsfx.controller.MainController"
@@ -10,7 +13,18 @@
       spacing="20">
 
     <Label fx:id="titleLabel"
-           styleClass="headline"
-           style="-fx-font-size: 24px;" />
+           styleClass="headline" />
+
+    <TabPane prefWidth="800" prefHeight="500">
+
+        <Tab text="Internal News">
+            <Label text="Internal News – coming soon"/>
+        </Tab>
+
+        <Tab text="External News">
+            <ListView fx:id="externalNewsList"/>
+        </Tab>
+
+    </TabPane>
 
 </VBox>
