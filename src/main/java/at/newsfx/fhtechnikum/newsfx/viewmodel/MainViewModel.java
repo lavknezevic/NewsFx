@@ -38,7 +38,9 @@ public class MainViewModel {
         externalNews.setAll(externalNewsInterface.loadExternalLatest());
     }
 
-    public void loadInternalNews() { internalNews.setAll(internalNewsInterface.loadInternalNews()); }
+    public void loadInternalNews() {
+        internalNews.setAll(internalNewsInterface.loadInternalNews());
+    }
 
     public StringProperty titleProperty() {
         return title;
