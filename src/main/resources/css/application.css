@@ -1,7 +1,7 @@
 .root {
     -fx-font-family: "Segoe UI", "Inter", sans-serif;
     -fx-font-size: 14px;
-    -fx-background-color: #f5f6fa;
+    -fx-background-color: #4C5060;
 }
 
 .headline {
@@ -11,7 +11,7 @@
 }
 
 .label {
-    -fx-text-fill: #353b48;
+    -fx-text-fill: white;
 }
 
 .border-pane {
@@ -21,4 +21,40 @@
 .button {
     -fx-background-radius: 6;
     -fx-padding: 8 16;
+}
+
+.content-area {
+    -fx-padding: 16
+}
+
+.tab-content {
+    -fx-padding: 8;
+    -fx-spacing: 10;
+}
+
+.nav-button {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 8 12;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+
+
+.sidebar {
+    -fx-background-color: #24262C;
+    -fx-border-color: #24262C;
+    -fx-border-width: 0 1 0 0;
+    -fx-pref-width: 200;
+    -fx-padding: 12;
+    -fx-spacing: 8;
+}
+
+.list-cell:even {
+    -fx-background-color: #2f3542;
+}
+
+.list-cell:odd {
+    -fx-background-color: #353b48;
 }

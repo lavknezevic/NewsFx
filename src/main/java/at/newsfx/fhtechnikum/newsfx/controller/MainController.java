@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.VBox;
 
 public class MainController extends BaseController {
 
@@ -17,6 +18,12 @@ public class MainController extends BaseController {
 
     @FXML
     private ListView<NewsItem> externalNewsList;
+
+    @FXML
+    private VBox internalView;
+
+    @FXML
+    private VBox externalView;
 
     private MainViewModel viewModel;
 
@@ -35,6 +42,28 @@ public class MainController extends BaseController {
 
         externalNewsList.setCellFactory(list -> new NewsItemCell());
     }
+
+    @FXML
+    private void showInternal() {
+        titleLabel.setText("NewsFx – Internal News");
+
+        internalView.setVisible(true);
+        internalView.setManaged(true);
+
+        externalView.setVisible(false);
+        externalView.setManaged(false);
+    }
+    @FXML
+    private void showExternal() {
+        titleLabel.setText("NewsFx – External News");
+
+        internalView.setVisible(false);
+        internalView.setManaged(false);
+
+        externalView.setVisible(true);
+        externalView.setManaged(true);
+    }
+
 
     private void loadExternalNewsAsync() {
         Task<Void> task = new Task<>() {
