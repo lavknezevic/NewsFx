@@ -148,7 +148,7 @@ public class MainController extends BaseController {
 
         task.setOnFailed(e ->
                 ErrorHandler.showTechnicalError(
-                        "Failed to load external news",
+                        "Failed to load internal news",
                         task.getException()
                 )
         );
