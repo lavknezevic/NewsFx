@@ -20,10 +20,6 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.layout.VBox;
-
 public class MainController extends BaseController {
 
     @FXML
