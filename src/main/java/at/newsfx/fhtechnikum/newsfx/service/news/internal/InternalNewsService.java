@@ -11,7 +11,7 @@ public class InternalNewsService implements InternalNewsInterface {
 
     @Override
     public List<NewsItem> loadInternalNews() {
-        return List.of();
+        return internalNews;
     }
 
     @Override
