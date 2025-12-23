@@ -1,4 +1,4 @@
-package at.newsfx.fhtechnikum.newsfx.service;
+package at.newsfx.fhtechnikum.newsfx.service.news.external;
 
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 
@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public class DummyNewsService implements NewsService {
+public class DummyExternalNewsInterface implements ExternalNewsInterface {
 
     @Override
-    public List<NewsItem> loadLatest() {
+    public List<NewsItem> loadExternalLatest() {
         return List.of(
                 new NewsItem(
                         UUID.randomUUID().toString(),
@@ -18,6 +18,8 @@ public class DummyNewsService implements NewsService {
                         "This news item is used for UI development.",
                         "NewsFx",
                         LocalDateTime.now().minusHours(1),
+                        null,
+                        null,
                         null,
                         true
                 ),
@@ -28,6 +30,8 @@ public class DummyNewsService implements NewsService {
                         "API integration coming next.",
                         "External Source",
                         LocalDateTime.now().minusHours(2),
+                        null,
+                        null,
                         null,
                         true
                 )

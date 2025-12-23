@@ -12,6 +12,9 @@ public class NewsItem {
     private final LocalDateTime publishedAt;
     private final String imageUrl;
     private final boolean external;
+    private final String linkUrl;
+    private final String pdfPath;
+
 
     public NewsItem(
             String id,
@@ -21,6 +24,8 @@ public class NewsItem {
             String source,
             LocalDateTime publishedAt,
             String imageUrl,
+            String linkUrl,
+            String pdfPath,
             boolean external
     ) {
         this.id = id;
@@ -30,6 +35,8 @@ public class NewsItem {
         this.source = source;
         this.publishedAt = publishedAt;
         this.imageUrl = imageUrl;
+        this.linkUrl = linkUrl;
+        this.pdfPath = pdfPath;
         this.external = external;
     }
 
@@ -63,5 +70,13 @@ public class NewsItem {
 
     public boolean isExternal() {
         return external;
+    }
+
+    public String getLinkUrl() {
+        return linkUrl;
+    }
+
+    public String getPdfPath() {
+        return pdfPath;
     }
 }

@@ -1,4 +1,4 @@
-package at.newsfx.fhtechnikum.newsfx.service;
+package at.newsfx.fhtechnikum.newsfx.service.news.external;
 
 import at.newsfx.fhtechnikum.newsfx.config.AppConfig;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
@@ -19,14 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class RssNewsService implements NewsService {
+public class RssExternalNewsInterface implements ExternalNewsInterface {
 
     private final HttpClient client = HttpClient.newBuilder()
             .followRedirects(HttpClient.Redirect.NORMAL)
             .build();
 
     @Override
-    public List<NewsItem> loadLatest() {
+    public List<NewsItem> loadExternalLatest() {
         String feedUrl = AppConfig.rssFeedUrl();
 
         try {
@@ -82,6 +82,8 @@ public class RssNewsService implements NewsService {
                     nullToFallback(description, ""),
                     sourceName,
                     publishedAt,
+                    null,
+                    null,
                     null,
                     true
             ));
