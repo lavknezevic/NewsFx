@@ -1,40 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <?import javafx.scene.control.Label?>
-    <?import javafx.scene.layout.VBox?>
-    <?import javafx.scene.control.TabPane?>
-    <?import javafx.scene.control.Tab?>
-    <?import javafx.scene.control.ListView?>
-    <?import javafx.scene.control.Button?>
-    <?import javafx.scene.layout.BorderPane?>
-    <?import javafx.scene.layout.HBox?>
-    <?import javafx.scene.control.TextField?>
-    <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.image.ImageView?>
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="at.newsfx.fhtechnikum.newsfx.controller.MainController"
-      alignment="CENTER"
-      spacing="20">
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="at.newsfx.fhtechnikum.newsfx.controller.MainController"
+            styleClass="root">
 
-        <Label fx:id="titleLabel"
-               styleClass="headline" />
+    <!-- Sidebar -->
+    <left>
+        <VBox spacing="3" styleClass="sidebar">
+            <padding>
+                <Insets top="16" right="12" bottom="16" left="12"/>
+            </padding>
 
-        <TabPane prefWidth="800" prefHeight="700">
-            <Tab text="Internal News">
-                <BorderPane prefWidth="800" prefHeight="500">
-                    <!-- Top area -->
-                    <top>
-                        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <Label fx:id="titleLabel" text="News Tool" styleClass="headline"/>
 
-                            <Button text="News Erstellen"
-                                    fx:id="createInternalNewsButton"
-                                    onAction="#onCreateInternalNews"/>
-                        </HBox>
-                    </top>
+            <Button text="External News"
+                    onAction="#showExternal"
+                    maxWidth="Infinity"
+                    styleClass="nav-button"/>
 
-                    <!-- Center content -->
-                    <center>
-                        <VBox spacing="20">
+            <Button text="Internal News"
+                    onAction="#showInternal"
+                    maxWidth="Infinity"
+                    styleClass="nav-button"/>
+        </VBox>
+    </left>
+
+    <!-- Main Content -->
+    <center>
+        <StackPane styleClass="content-area">
+
+            <!-- External News View -->
+            <VBox fx:id="externalView"
+                  spacing="10"
+                  styleClass="tab-content">
+                <Label text="External News (API)" styleClass="headline"/>
+                <ListView fx:id="externalNewsList" VBox.vgrow="ALWAYS"/>
+            </VBox>
+
+            <!-- Internal News View -->
+            <BorderPane fx:id="internalView"
+                        prefWidth="800"
+                        visible="false"
+                        styleClass="tab-content">
+
+                <!-- Top -->
+                <top>
+                    <HBox alignment="CENTER_RIGHT" spacing="10">
+                        <Button text="News Erstellen"
+                                fx:id="createInternalNewsButton"
+                                onAction="#onCreateInternalNews"/>
+                    </HBox>
+                </top>
+
+                <!-- Center -->
+                <center>
+                    <VBox spacing="20">
+
+                        <!-- Form -->
                         <VBox fx:id="internalNewsForm"
                               spacing="10"
                               maxWidth="600">
@@ -50,10 +86,8 @@
                                       wrapText="true"
                                       prefRowCount="8"/>
 
-
                             <TextField fx:id="linkField"
                                        promptText="Optional link (https://...)"/>
-
 
                             <Button text="Choose Image"
                                     onAction="#onChooseImage"/>
@@ -69,28 +103,25 @@
 
                             <Label fx:id="pdfLabel"
                                    text="No PDF selected"/>
-
-
                         </VBox>
 
-                        <ListView fx:id="internalNewsList"/>
-                        </VBox>
-                    </center>
+                        <!-- Internal News List -->
+                        <ListView fx:id="internalNewsList" VBox.vgrow="ALWAYS"/>
+                    </VBox>
+                </center>
 
-                    <bottom>
-                        <HBox spacing="10" alignment="CENTER_RIGHT" >
-                            <Button text="Save" onAction="#onSaveInternalNews"/>
-                            <Button text="Cancel" onAction="#onCancelInternalNews"/>
-                        </HBox>
-                    </bottom>
+                <!-- Bottom -->
+                <bottom>
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Save"
+                                onAction="#onSaveInternalNews"/>
+                        <Button text="Cancel"
+                                onAction="#onCancelInternalNews"/>
+                    </HBox>
+                </bottom>
 
-                </BorderPane>
-            </Tab>
+            </BorderPane>
 
-            <Tab text="External News">
-                <ListView fx:id="externalNewsList"/>
-            </Tab>
-
-        </TabPane>
-
-    </VBox>
+        </StackPane>
+    </center>
+</BorderPane>
