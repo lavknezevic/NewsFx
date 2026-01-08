@@ -19,7 +19,8 @@ public class DummyNewsService implements NewsService {
                         "NewsFx",
                         LocalDateTime.now().minusHours(1),
                         null,
-                        true
+                        true,
+                        "https://orf.at/"
                 ),
                 new NewsItem(
                         UUID.randomUUID().toString(),
@@ -29,7 +30,8 @@ public class DummyNewsService implements NewsService {
                         "External Source",
                         LocalDateTime.now().minusHours(2),
                         null,
-                        true
+                        true,
+                        "https://orf.at/"
                 )
         );
     }

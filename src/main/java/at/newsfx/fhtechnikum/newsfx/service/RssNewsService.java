@@ -83,7 +83,9 @@ public class RssNewsService implements NewsService {
                     sourceName,
                     publishedAt,
                     null,
-                    true
+                    true,
+                    link
+
             ));
         }
 

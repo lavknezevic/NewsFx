@@ -4,6 +4,7 @@ module at.newsfx.fhtechnikum.newsfx {
 
     requires java.net.http;
     requires java.xml;
+    requires javafx.web;
 
 
     opens at.newsfx.fhtechnikum.newsfx.controller to javafx.fxml;

@@ -12,6 +12,9 @@ public class NewsItem {
     private final LocalDateTime publishedAt;
     private final String imageUrl;
     private final boolean external;
+    private final String articleUrl;
+
+
 
     public NewsItem(
             String id,
@@ -21,7 +24,9 @@ public class NewsItem {
             String source,
             LocalDateTime publishedAt,
             String imageUrl,
-            boolean external
+            boolean external,
+            String articleUrl
+
     ) {
         this.id = id;
         this.title = title;
@@ -31,6 +36,7 @@ public class NewsItem {
         this.publishedAt = publishedAt;
         this.imageUrl = imageUrl;
         this.external = external;
+        this.articleUrl = articleUrl;
     }
 
     public String getId() {
@@ -64,4 +70,10 @@ public class NewsItem {
     public boolean isExternal() {
         return external;
     }
+
+    public String getArticleUrl() { return articleUrl;
+    }
+
+
+
 }
