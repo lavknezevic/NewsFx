@@ -107,15 +107,6 @@
                             <Label text="Create Internal News"
                                    styleClass="headline"/>
 
-                            <HBox spacing="10" styleClass="filter-bar">
-                                <TextField fx:id="internalSearchField"
-                                           promptText="Suche (Titel/Text)..."
-                                           HBox.hgrow="ALWAYS"/>
-                                <ComboBox fx:id="internalCategoryBox"
-                                          promptText="Kategorie"
-                                          prefWidth="160"/>
-                            </HBox>
-
                             <TextField fx:id="titleField"
                                        promptText="Title"/>
 
