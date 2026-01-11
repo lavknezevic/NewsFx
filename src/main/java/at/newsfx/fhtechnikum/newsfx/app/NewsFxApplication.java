@@ -17,7 +17,7 @@ public class NewsFxApplication extends Application {
     public void start(Stage stage) throws Exception {
         Parent root = ViewManager.load(View.MAIN);
 
-        Scene scene = new Scene(root, 1000, 700);
+        Scene scene = new Scene(root, 1400, 1000);
 
         scene.getStylesheets().add(
                 ResourceUtil.get("/css/application.css").toExternalForm()
