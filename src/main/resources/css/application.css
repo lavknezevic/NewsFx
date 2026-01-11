@@ -58,3 +58,13 @@
 .list-cell:odd {
     -fx-background-color: #353b48;
 }
+
+
+.filter-bar {
+    -fx-padding: 0 0 6 0;
+}
+
+.article-topbar {
+    -fx-padding: 10;
+    -fx-alignment: CENTER_LEFT;
+}

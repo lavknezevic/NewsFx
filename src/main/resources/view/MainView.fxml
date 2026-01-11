@@ -13,6 +13,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.web.WebView?>
+<?import javafx.scene.control.ComboBox?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="at.newsfx.fhtechnikum.newsfx.controller.MainController"
@@ -44,11 +46,38 @@
         <StackPane styleClass="content-area">
 
             <!-- External News View -->
-            <VBox fx:id="externalView"
-                  spacing="10"
-                  styleClass="tab-content">
+            <VBox fx:id="externalView" spacing="10" styleClass="tab-content">
                 <Label text="External News (API)" styleClass="headline"/>
-                <ListView fx:id="externalNewsList" VBox.vgrow="ALWAYS"/>
+                <ListView fx:id="externalNewsList" VBox.vgrow="ALWAYS" />
+
+                <StackPane fx:id="externalStack" VBox.vgrow="ALWAYS">
+
+                    <!-- PAGE 1: LISTE + FILTER -->
+                    <VBox fx:id="externalListPage" spacing="10">
+                        <HBox spacing="10" styleClass="filter-bar">
+                            <TextField fx:id="externalSearchField"
+                                       promptText="Suche im Titel..."
+                                       HBox.hgrow="ALWAYS"/>
+                            <ComboBox fx:id="externalCategoryBox" prefWidth="160"/>
+                        </HBox>
+
+                        <ListView fx:id="externalNewsList" VBox.vgrow="ALWAYS"/>
+                    </VBox>
+
+                    <!-- PAGE 2: ARTIKEL-DETAIL (WebView) -->
+                    <BorderPane fx:id="externalArticlePage" visible="false" managed="false">
+                        <top>
+                            <HBox spacing="10" styleClass="article-topbar">
+                                <Button text="← Zurück" onAction="#backToExternalList" />
+                                <Label fx:id="articleTitleLabel" text="Artikel" styleClass="headline"/>
+                            </HBox>
+                        </top>
+                        <center>
+                            <WebView fx:id="articleWebView"/>
+                        </center>
+                    </BorderPane>
+
+                </StackPane>
             </VBox>
 
             <!-- Internal News View -->
@@ -77,6 +106,15 @@
 
                             <Label text="Create Internal News"
                                    styleClass="headline"/>
+
+                            <HBox spacing="10" styleClass="filter-bar">
+                                <TextField fx:id="internalSearchField"
+                                           promptText="Suche (Titel/Text)..."
+                                           HBox.hgrow="ALWAYS"/>
+                                <ComboBox fx:id="internalCategoryBox"
+                                          promptText="Kategorie"
+                                          prefWidth="160"/>
+                            </HBox>
 
                             <TextField fx:id="titleField"
                                        promptText="Title"/>

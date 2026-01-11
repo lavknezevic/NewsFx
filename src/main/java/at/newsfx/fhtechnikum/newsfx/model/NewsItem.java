@@ -14,6 +14,7 @@ public class NewsItem {
     private final boolean external;
     private final String linkUrl;
     private final String pdfPath;
+    private final String articleUrl;
 
 
     public NewsItem(
@@ -26,7 +27,8 @@ public class NewsItem {
             String imageUrl,
             String linkUrl,
             String pdfPath,
-            boolean external
+            boolean external,
+            String articleUrl
     ) {
         this.id = id;
         this.title = title;
@@ -38,6 +40,7 @@ public class NewsItem {
         this.linkUrl = linkUrl;
         this.pdfPath = pdfPath;
         this.external = external;
+        this.articleUrl = articleUrl;
     }
 
     public String getId() {
@@ -79,4 +82,6 @@ public class NewsItem {
     public String getPdfPath() {
         return pdfPath;
     }
+
+    public String getArticleUrl() { return articleUrl;}
 }
