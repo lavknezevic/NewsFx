@@ -7,9 +7,8 @@ import at.newsfx.fhtechnikum.newsfx.view.ViewManager;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
-import java.util.Objects;
 
 
 public class NewsFxApplication extends Application {
@@ -22,6 +21,10 @@ public class NewsFxApplication extends Application {
 
         scene.getStylesheets().add(
                 ResourceUtil.get("/css/application.css").toExternalForm()
+        );
+
+        stage.getIcons().add(
+            new Image(ResourceUtil.get("/icons/newsfx.png").toExternalForm())
         );
 
         stage.setTitle(AppConfig.windowTitle());

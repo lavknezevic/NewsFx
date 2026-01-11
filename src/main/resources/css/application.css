@@ -1,4 +1,6 @@
-.root {
+.root,
+.combo-box-popup,
+.context-menu {
     /* ===== Premium dark theme palette (looked-up colors) ===== */
     -fx-bg: #0B1220;
     -fx-surface: #0F172A;
@@ -195,6 +197,7 @@
 .text-field,
 .text-area {
     -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-control-inner-background: rgba(255, 255, 255, 0.05);
     -fx-text-fill: -fx-text;
     -fx-prompt-text-fill: -fx-muted-2;
     -fx-background-radius: 12;
@@ -202,6 +205,12 @@
     -fx-border-color: rgba(255, 255, 255, 0.10);
     -fx-border-width: 1;
     -fx-padding: 10 12;
+    -fx-highlight-fill: rgba(79, 124, 255, 0.35);
+    -fx-highlight-text-fill: -fx-text;
+}
+
+.text-area {
+    -fx-inner-background: rgba(255, 255, 255, 0.05);
 }
 
 .text-field:focused,
@@ -212,7 +221,9 @@
 }
 
 .text-area .content {
-    -fx-background-color: transparent;
+    -fx-background-color: -fx-control-inner-background;
+    -fx-background-radius: 10;
+    -fx-padding: 8 10 8 10;
 }
 
 .search-field {
@@ -231,15 +242,47 @@
     -fx-border-color: rgba(79, 124, 255, 0.75);
 }
 
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow {
+    -fx-background-color: rgba(233, 238, 247, 0.78);
+}
+
 .combo-box .list-cell {
     -fx-text-fill: -fx-text;
 }
 
 .combo-box-popup .list-view {
     -fx-background-color: -fx-surface;
+    -fx-control-inner-background: -fx-surface;
+    -fx-background-insets: 0;
+    -fx-padding: 6;
     -fx-background-radius: 12;
     -fx-border-radius: 12;
     -fx-border-color: rgba(255, 255, 255, 0.12);
+}
+
+.combo-box-popup .list-view .virtual-flow {
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text;
+    -fx-padding: 10 12;
+    -fx-background-insets: 0;
+}
+
+.combo-box-popup .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.combo-box-popup .list-cell:filled:selected,
+.combo-box-popup .list-cell:filled:selected:hover {
+    -fx-background-color: rgba(79, 124, 255, 0.26);
+    -fx-text-fill: -fx-text;
 }
 
 /* ===== List (News cards) ===== */
