@@ -83,5 +83,7 @@ public class NewsItem {
         return pdfPath;
     }
 
-    public String getArticleUrl() { return articleUrl;}
+    public String getArticleUrl() {
+        return articleUrl;
+    }
 }
