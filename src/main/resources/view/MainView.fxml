@@ -48,7 +48,6 @@
             <!-- External News View -->
             <VBox fx:id="externalView" spacing="10" styleClass="tab-content">
                 <Label text="External News (API)" styleClass="headline"/>
-                <ListView fx:id="externalNewsList" VBox.vgrow="ALWAYS" />
 
                 <StackPane fx:id="externalStack" VBox.vgrow="ALWAYS">
 
