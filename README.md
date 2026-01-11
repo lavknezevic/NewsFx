@@ -7,7 +7,7 @@ JavaFX News-Anwendung (Maven), die externe News aus einem RSS-Feed lädt und int
 - **External News (RSS)**: Lädt aktuelle Einträge aus einem konfigurierbaren RSS-Feed und zeigt Artikel per **WebView**.
 - **Suche & Filter**: Suche im Titel, einfache Kategorieauswahl (derzeit UI-seitig).
 - **Internal News**: Erstellen von internen Beiträgen inkl. optionalem Link, Bild und PDF-Anhang (lokale Dateien).
-- **Modernes UI**: JavaFX + FXML + CSS.
+- **(Modernes UI) xD**: JavaFX + FXML + CSS.
 
 ## Voraussetzungen
 
