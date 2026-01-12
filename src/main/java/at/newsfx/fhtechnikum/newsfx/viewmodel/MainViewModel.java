@@ -50,4 +50,24 @@ public class MainViewModel {
         internalNewsInterface.addInternalNews(newsItem);
         internalNews.add(0, newsItem);
     }
+
+    public void updateInternalNewsRuntime(NewsItem newsItem) {
+        internalNewsInterface.updateInternalNews(newsItem);
+
+        for (int i = 0; i < internalNews.size(); i++) {
+            NewsItem existing = internalNews.get(i);
+            if (existing != null && existing.getId().equals(newsItem.getId())) {
+                internalNews.set(i, newsItem);
+                return;
+            }
+        }
+
+        // Fallback: if not found locally, refresh from persistence
+        loadInternalNews();
+    }
+
+    public void deleteInternalNewsRuntime(String id) {
+        internalNewsInterface.deleteInternalNews(id);
+        internalNews.removeIf(item -> item != null && id.equals(item.getId()));
+    }
 }

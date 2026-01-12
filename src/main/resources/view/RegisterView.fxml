@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="at.newsfx.fhtechnikum.newsfx.controller.RegisterController"
+           styleClass="root">
+
+    <VBox spacing="14" maxWidth="620" alignment="CENTER">
+        <padding>
+            <Insets top="40" right="40" bottom="40" left="40"/>
+        </padding>
+
+        <HBox spacing="10" alignment="CENTER_LEFT" maxWidth="460">
+            <Button text="← Back" onAction="#onBack" styleClass="ghost-button"/>
+            <VBox spacing="2">
+                <Label text="Create Account" styleClass="screen-title"/>
+                <Label text="Create new User account" styleClass="screen-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="10" maxWidth="460" styleClass="card">
+            <padding>
+                <Insets top="18" right="18" bottom="18" left="18"/>
+            </padding>
+
+            <Label text="Username"/>
+            <TextField fx:id="usernameField" promptText="e.g. max.mustermann"/>
+
+            <Label text="Password"/>
+            <PasswordField fx:id="passwordField" promptText="Choose a password"/>
+
+            <Label text="Confirm Password"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Repeat password"/>
+
+            <HBox spacing="10">
+                <Button text="Register" onAction="#onRegister" styleClass="primary-button"/>
+            </HBox>
+
+            <Label fx:id="statusLabel" text="" styleClass="meta"/>
+        </VBox>
+    </VBox>
+
+</StackPane>

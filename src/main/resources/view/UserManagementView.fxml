@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="at.newsfx.fhtechnikum.newsfx.controller.UserManagementController"
+            styleClass="root">
+
+    <top>
+        <HBox spacing="10" alignment="CENTER_LEFT" styleClass="screen-header">
+            <Button text="← Back" onAction="#onBack" styleClass="ghost-button"/>
+            <VBox spacing="2">
+                <Label text="User Management" styleClass="screen-title"/>
+                <Label text="Change user roles" styleClass="screen-subtitle"/>
+            </VBox>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="12" styleClass="content-area">
+            <padding>
+                <Insets top="16" right="16" bottom="16" left="16"/>
+            </padding>
+
+            <Label fx:id="statusLabel" text="" styleClass="meta"/>
+
+            <VBox styleClass="card" spacing="10">
+                <padding>
+                    <Insets top="16" right="16" bottom="16" left="16"/>
+                </padding>
+                <ListView fx:id="usersList" prefHeight="520" styleClass="news-list" />
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

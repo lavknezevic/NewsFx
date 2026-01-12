@@ -6,6 +6,9 @@ module at.newsfx.fhtechnikum.newsfx {
     requires java.xml;
     requires java.desktop;
     requires javafx.web;
+    requires java.sql;
+
+    requires com.h2database;
 
 
     opens at.newsfx.fhtechnikum.newsfx.controller to javafx.fxml;

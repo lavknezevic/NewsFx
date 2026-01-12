@@ -7,14 +7,30 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 
 import java.awt.*;
 import java.io.File;
 import java.net.URI;
+import java.util.function.Consumer;
 
 public class NewsItemCell extends ListCell<NewsItem> {
+
+    private final boolean enableInternalActions;
+    private final Consumer<NewsItem> onEdit;
+    private final Consumer<NewsItem> onDelete;
+
+    public NewsItemCell() {
+        this(false, null, null);
+    }
+
+    public NewsItemCell(boolean enableInternalActions, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete) {
+        this.enableInternalActions = enableInternalActions;
+        this.onEdit = onEdit;
+        this.onDelete = onDelete;
+    }
 
     @Override
     protected void updateItem(NewsItem item, boolean empty) {
@@ -61,6 +77,27 @@ public class NewsItemCell extends ListCell<NewsItem> {
             Button pdfButton = new Button("Open PDF");
             pdfButton.setOnAction(e -> openPdf(item.getPdfPath()));
             box.getChildren().add(pdfButton);
+        }
+
+        if (enableInternalActions && !item.isExternal()) {
+            HBox actions = new HBox(10);
+
+            Button editButton = new Button("Edit");
+            editButton.setOnAction(e -> {
+                if (onEdit != null) {
+                    onEdit.accept(item);
+                }
+            });
+
+            Button deleteButton = new Button("Delete");
+            deleteButton.setOnAction(e -> {
+                if (onDelete != null) {
+                    onDelete.accept(item);
+                }
+            });
+
+            actions.getChildren().addAll(editButton, deleteButton);
+            box.getChildren().add(actions);
         }
 
         setText(null);

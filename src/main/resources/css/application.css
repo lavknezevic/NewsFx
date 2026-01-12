@@ -1,70 +1,425 @@
-.root {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 14px;
-    -fx-background-color: #4C5060;
-}
+.root,
+.combo-box-popup,
+.context-menu {
+    /* ===== Premium dark theme palette (looked-up colors) ===== */
+    -fx-bg: #0B1220;
+    -fx-surface: #0F172A;
+    -fx-surface-2: #111C33;
+    -fx-surface-3: rgba(255, 255, 255, 0.06);
+    -fx-border: rgba(255, 255, 255, 0.10);
+    -fx-border-strong: rgba(255, 255, 255, 0.16);
 
-.headline {
-    -fx-font-size: 22px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2f3640;
+    -fx-text: #E9EEF7;
+    -fx-muted: rgba(233, 238, 247, 0.70);
+    -fx-muted-2: rgba(233, 238, 247, 0.52);
+
+    -fx-accent: #4F7CFF;
+    -fx-accent-2: #22D3EE;
+    -fx-accent-soft: rgba(79, 124, 255, 0.20);
+
+    -fx-focus-color: -fx-accent;
+    -fx-faint-focus-color: transparent;
+
+    -fx-font-family: "Segoe UI Variable", "Segoe UI", "Inter", sans-serif;
+    -fx-font-size: 13px;
+
+    -fx-background-color: linear-gradient(to bottom right, #0B1220, #070B14);
 }
 
 .label {
-    -fx-text-fill: white;
-}
-
-.border-pane {
-    -fx-padding: 16;
-}
-
-.button {
-    -fx-background-radius: 6;
-    -fx-padding: 8 16;
+    -fx-text-fill: -fx-text;
 }
 
 .content-area {
-    -fx-padding: 16
+    -fx-padding: 18;
 }
 
 .tab-content {
-    -fx-padding: 8;
-    -fx-spacing: 10;
+    -fx-padding: 6;
+}
+
+/* ===== Typography ===== */
+.app-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-text;
+}
+
+.headline {
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-text;
+}
+
+.screen-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-text;
+}
+
+.screen-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-muted;
+}
+
+.sidebar-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-muted;
+}
+
+.sidebar-section {
+    -fx-padding: 10 0 2 0;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -fx-muted-2;
+}
+
+.form-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-text;
+}
+
+.meta {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-muted;
+}
+
+/* ===== Layout surfaces ===== */
+.sidebar {
+    -fx-background-color: linear-gradient(to bottom, -fx-surface, #0B1220);
+    -fx-border-color: -fx-border;
+    -fx-border-width: 0 1 0 0;
+    -fx-pref-width: 250;
+}
+
+.sidebar-header {
+    -fx-padding: 2 0 10 0;
+}
+
+.screen-header {
+    -fx-padding: 6 8 10 8;
+}
+
+.internal-content {
+    -fx-padding: 0 8 8 8;
+}
+
+.bottom-actions {
+    -fx-padding: 10 8 6 8;
+}
+
+.card {
+    -fx-background-color: -fx-surface-2;
+    -fx-background-radius: 18;
+    -fx-border-color: -fx-border;
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 28, 0.18, 0, 10);
+}
+
+.form-card {
+    -fx-padding: 16;
+}
+
+.web-card {
+    -fx-padding: 0;
+}
+
+/* ===== Buttons ===== */
+.button {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-text-fill: -fx-text;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-padding: 9 14;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+    -fx-border-color: rgba(255, 255, 255, 0.18);
+}
+
+.button:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.primary-button {
+    -fx-background-color: linear-gradient(to bottom right, -fx-accent, -fx-accent-2);
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(79, 124, 255, 0.35), 18, 0.18, 0, 8);
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #6B90FF, #3EE7FF);
+}
+
+.secondary-button {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-border-color: rgba(255, 255, 255, 0.14);
+}
+
+.ghost-button {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.16);
+}
+
+.ghost-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
 }
 
 .nav-button {
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 8 12;
+    -fx-padding: 10 12;
     -fx-font-size: 13px;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
 }
 
-
-
-.sidebar {
-    -fx-background-color: #24262C;
-    -fx-border-color: #24262C;
-    -fx-border-width: 0 1 0 0;
-    -fx-pref-width: 200;
-    -fx-padding: 12;
-    -fx-spacing: 8;
+.nav-button:hover {
+    -fx-background-color: rgba(79, 124, 255, 0.14);
+    -fx-border-color: rgba(79, 124, 255, 0.28);
 }
 
-.list-cell:even {
-    -fx-background-color: #2f3542;
+.nav-button:pressed {
+    -fx-background-color: rgba(79, 124, 255, 0.20);
 }
 
-.list-cell:odd {
-    -fx-background-color: #353b48;
+/* ===== Inputs ===== */
+.text-field,
+.text-area {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-control-inner-background: rgba(255, 255, 255, 0.05);
+    -fx-text-fill: -fx-text;
+    -fx-prompt-text-fill: -fx-muted-2;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-padding: 10 12;
+    -fx-highlight-fill: rgba(79, 124, 255, 0.35);
+    -fx-highlight-text-fill: -fx-text;
 }
 
+.text-area {
+    -fx-inner-background: rgba(255, 255, 255, 0.05);
+}
 
+.text-field:focused,
+.text-area:focused {
+    -fx-border-color: rgba(79, 124, 255, 0.75);
+    -fx-background-color: rgba(79, 124, 255, 0.10), rgba(255, 255, 255, 0.05);
+    -fx-background-insets: 0, 0;
+}
+
+.text-area .content {
+    -fx-background-color: -fx-control-inner-background;
+    -fx-background-radius: 10;
+    -fx-padding: 8 10 8 10;
+}
+
+/* JavaFX TextArea uses nested ScrollPane/Viewport nodes; ensure none of them fall back to white. */
+.text-area .scroll-pane,
+.text-area .scroll-pane .viewport,
+.text-area .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area .content {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.search-field {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.combo-box {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+}
+
+.combo-box:focused {
+    -fx-border-color: rgba(79, 124, 255, 0.75);
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow {
+    -fx-background-color: rgba(233, 238, 247, 0.78);
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: -fx-text;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: -fx-surface;
+    -fx-control-inner-background: -fx-surface;
+    -fx-background-insets: 0;
+    -fx-padding: 6;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.12);
+}
+
+.combo-box-popup .list-view .virtual-flow {
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text;
+    -fx-padding: 10 12;
+    -fx-background-insets: 0;
+}
+
+.combo-box-popup .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.combo-box-popup .list-cell:filled:selected,
+.combo-box-popup .list-cell:filled:selected:hover {
+    -fx-background-color: rgba(79, 124, 255, 0.26);
+    -fx-text-fill: -fx-text;
+}
+
+/* ===== List (News cards) ===== */
+.news-list {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Default ListView (non news-list) should also be dark/transparent by default. */
+.list-view {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+}
+
+.list-view .virtual-flow {
+    -fx-background-color: transparent;
+}
+
+.list-cell {
+    -fx-text-fill: -fx-text;
+}
+
+.news-list .virtual-flow {
+    -fx-background-color: transparent;
+}
+
+.news-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.news-list .list-cell:filled {
+    -fx-background-color: rgba(255, 255, 255, 0.045);
+    -fx-background-radius: 16;
+    -fx-background-insets: 0 0 12 0;
+    -fx-border-color: rgba(255, 255, 255, 0.09);
+    -fx-border-radius: 16;
+    -fx-border-insets: 0 0 12 0;
+    -fx-border-width: 1;
+    -fx-padding: 14;
+}
+
+.news-list .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.065);
+    -fx-border-color: rgba(79, 124, 255, 0.22);
+}
+
+.news-list .list-cell:filled:selected {
+    -fx-background-color: rgba(79, 124, 255, 0.18);
+    -fx-border-color: rgba(79, 124, 255, 0.55);
+}
+
+.news-list .list-cell .headline {
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-text;
+}
+
+.news-list .list-cell .label {
+    -fx-text-fill: -fx-muted;
+}
+
+.hyperlink {
+    -fx-text-fill: -fx-accent;
+    -fx-border-color: transparent;
+    -fx-underline: false;
+    -fx-padding: 2 0 0 0;
+}
+
+.hyperlink:hover {
+    -fx-underline: true;
+    -fx-text-fill: #8AA6FF;
+}
+
+.news-list .list-cell .button {
+    -fx-font-size: 12px;
+    -fx-padding: 7 10;
+}
+
+/* ===== WebView container ===== */
+.web-view {
+    -fx-background-color: transparent;
+}
+
+/* ===== Scrollbars ===== */
+.scroll-bar:horizontal,
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .track {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-radius: 999;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.18);
+    -fx-background-radius: 999;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.26);
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ===== Small tweaks ===== */
 .filter-bar {
-    -fx-padding: 0 0 6 0;
+    -fx-padding: 2 8 8 8;
 }
 
 .article-topbar {
-    -fx-padding: 10;
-    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 6 8 10 8;
+}
+
+.article-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-text;
 }

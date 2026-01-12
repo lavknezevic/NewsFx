@@ -7,21 +7,26 @@ import at.newsfx.fhtechnikum.newsfx.view.ViewManager;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
-
-import java.util.Objects;
 
 
 public class NewsFxApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = ViewManager.load(View.MAIN);
+        at.newsfx.fhtechnikum.newsfx.config.AppContext.get();
 
-        Scene scene = new Scene(root, 1000, 700);
+        Parent root = ViewManager.load(View.LOGIN);
+
+        Scene scene = new Scene(root, 1400, 1000);
 
         scene.getStylesheets().add(
                 ResourceUtil.get("/css/application.css").toExternalForm()
+        );
+
+        stage.getIcons().add(
+            new Image(ResourceUtil.get("/icons/newsfx.png").toExternalForm())
         );
 
         stage.setTitle(AppConfig.windowTitle());

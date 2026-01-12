@@ -1,11 +1,16 @@
 package at.newsfx.fhtechnikum.newsfx.controller;
 
+import at.newsfx.fhtechnikum.newsfx.config.AppContext;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
+import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.ExternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.RssExternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsService;
 import at.newsfx.fhtechnikum.newsfx.util.error.ErrorHandler;
+import at.newsfx.fhtechnikum.newsfx.util.error.UserException;
+import at.newsfx.fhtechnikum.newsfx.view.View;
+import at.newsfx.fhtechnikum.newsfx.view.ViewManager;
 import at.newsfx.fhtechnikum.newsfx.viewmodel.MainViewModel;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
@@ -24,6 +29,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
 public class MainController extends BaseController {
 
     @FXML
@@ -41,9 +47,19 @@ public class MainController extends BaseController {
     @FXML
     public Label pdfLabel;
 
+    @FXML
+    private Button userManagementButton;
+
+    @FXML
+    private Button logoutButton;
+
     private String selectedPdfPath;
 
     private String selectedImagePath;
+
+    private String editingInternalNewsId;
+
+    private AuthService authService;
 
     @FXML
     private Label titleLabel;
@@ -84,8 +100,10 @@ public class MainController extends BaseController {
 
     @Override
     public void onViewLoaded() {
+        authService = AppContext.get().authService();
+
         ExternalNewsInterface externalNewsInterface = new RssExternalNewsInterface();
-        InternalNewsInterface internalNewsInterface = new InternalNewsService();
+        InternalNewsInterface internalNewsInterface = AppContext.get().internalNewsService();
         viewModel = new MainViewModel(externalNewsInterface, internalNewsInterface);
 
         bindInternalViewModel();
@@ -97,8 +115,15 @@ public class MainController extends BaseController {
         internalNewsForm.setVisible(false);
         internalNewsForm.setManaged(false);
 
-        createInternalNewsButton.setVisible(true);
-        createInternalNewsButton.setManaged(true);
+        boolean canManageInternal = authService.canManageInternalNews();
+        createInternalNewsButton.setVisible(canManageInternal);
+        createInternalNewsButton.setManaged(canManageInternal);
+
+        boolean isAdmin = authService.isAdmin();
+        if (userManagementButton != null) {
+            userManagementButton.setVisible(isAdmin);
+            userManagementButton.setManaged(isAdmin);
+        }
 
         internalNewsList.setVisible(true);
         internalNewsList.setManaged(true);
@@ -202,6 +227,9 @@ public class MainController extends BaseController {
     private void showInternal() {
         titleLabel.setText("NewsFx – Internal News");
 
+        // Refresh from DB each time (helps multi-instance demo)
+        loadInternalNewsAsync();
+
         internalView.setVisible(true);
         internalView.setManaged(true);
 
@@ -224,7 +252,12 @@ public class MainController extends BaseController {
         titleLabel.setText("NewsFx – Internal News");
         internalNewsList.setItems(viewModel.internalNewsProperty());
 
-        internalNewsList.setCellFactory(list -> new NewsItemCell());
+        boolean canManageInternal = authService.canManageInternalNews();
+        internalNewsList.setCellFactory(list -> new NewsItemCell(
+                canManageInternal,
+                this::startEditInternalNews,
+                this::deleteInternalNews
+        ));
         internalNewsList.setFixedCellSize(-1);
     }
 
@@ -268,6 +301,13 @@ public class MainController extends BaseController {
     }
 
     public void onCreateInternalNews(ActionEvent actionEvent) {
+        if (!authService.canManageInternalNews()) {
+            ErrorHandler.showUserError("You are not allowed to create internal news.");
+            return;
+        }
+
+        editingInternalNewsId = null;
+
         internalNewsForm.setVisible(true);
         internalNewsForm.setManaged(true);
 
@@ -281,13 +321,20 @@ public class MainController extends BaseController {
     @FXML
     private void onSaveInternalNews() {
 
+        if (!authService.canManageInternalNews()) {
+            ErrorHandler.showUserError("You are not allowed to create/edit internal news.");
+            return;
+        }
+
         if (titleField.getText().isBlank() || contentArea.getText().isBlank()) {
             showValidationAlert();
             return;
         }
 
+        String id = (editingInternalNewsId == null) ? UUID.randomUUID().toString() : editingInternalNewsId;
+
         NewsItem newsItem = new NewsItem(
-                UUID.randomUUID().toString(),
+                id,
                 titleField.getText(),
                 contentArea.getText().substring(
                         0, Math.min(100, contentArea.getText().length())),
@@ -301,7 +348,11 @@ public class MainController extends BaseController {
                 null
         );
 
-        viewModel.addInternalNewsRuntime(newsItem);
+        if (editingInternalNewsId == null) {
+            viewModel.addInternalNewsRuntime(newsItem);
+        } else {
+            viewModel.updateInternalNewsRuntime(newsItem);
+        }
 
         System.out.println("Saved news: " + newsItem.getTitle());
 
@@ -322,13 +373,17 @@ public class MainController extends BaseController {
         previewImage.setVisible(false);
         internalNewsForm.setVisible(false);
         internalNewsForm.setManaged(false);
-        createInternalNewsButton.setVisible(true);
-        createInternalNewsButton.setManaged(true);
+
+        boolean canManageInternal = authService.canManageInternalNews();
+        createInternalNewsButton.setVisible(canManageInternal);
+        createInternalNewsButton.setManaged(canManageInternal);
+
         internalNewsList.setVisible(true);
         internalNewsList.setManaged(true);
         linkField.clear();
         pdfLabel.setText("No PDF selected");
         selectedPdfPath = null;
+        editingInternalNewsId = null;
     }
 
     private void showValidationAlert() {
@@ -380,5 +435,84 @@ public class MainController extends BaseController {
             pdfLabel.setText(file.getName());
         }
 
+    }
+
+    private void startEditInternalNews(NewsItem item) {
+        try {
+            if (!authService.canManageInternalNews()) {
+                throw new UserException("You are not allowed to edit internal news.");
+            }
+            if (item == null) {
+                return;
+            }
+
+            editingInternalNewsId = item.getId();
+
+            titleField.setText(item.getTitle());
+            contentArea.setText(item.getContent());
+            linkField.setText(item.getLinkUrl() == null ? "" : item.getLinkUrl());
+
+            selectedImagePath = item.getImageUrl();
+            if (selectedImagePath != null && !selectedImagePath.isBlank()) {
+                previewImage.setImage(new Image(selectedImagePath, true));
+                previewImage.setVisible(true);
+            } else {
+                previewImage.setImage(null);
+                previewImage.setVisible(false);
+            }
+
+            selectedPdfPath = item.getPdfPath();
+            pdfLabel.setText((selectedPdfPath == null || selectedPdfPath.isBlank()) ? "No PDF selected" : "PDF attached");
+
+            internalNewsForm.setVisible(true);
+            internalNewsForm.setManaged(true);
+
+            createInternalNewsButton.setVisible(false);
+            createInternalNewsButton.setManaged(false);
+
+            internalNewsList.setVisible(false);
+            internalNewsList.setManaged(false);
+        } catch (UserException e) {
+            ErrorHandler.showUserError(e.getMessage());
+        }
+    }
+
+    private void deleteInternalNews(NewsItem item) {
+        try {
+            if (!authService.canManageInternalNews()) {
+                throw new UserException("You are not allowed to delete internal news.");
+            }
+            if (item == null) {
+                return;
+            }
+
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setHeaderText(null);
+            confirm.setContentText("Delete '" + item.getTitle() + "'?" );
+            if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+                return;
+            }
+
+            viewModel.deleteInternalNewsRuntime(item.getId());
+        } catch (UserException e) {
+            ErrorHandler.showUserError(e.getMessage());
+        } catch (Exception e) {
+            ErrorHandler.showTechnicalError("Failed to delete internal news", e);
+        }
+    }
+
+    @FXML
+    private void onOpenUserManagement() {
+        if (!authService.isAdmin()) {
+            ErrorHandler.showUserError("Only admins can manage users.");
+            return;
+        }
+        ViewManager.setRoot(titleLabel.getScene(), View.USER_MANAGEMENT);
+    }
+
+    @FXML
+    private void onLogout() {
+        authService.logout();
+        ViewManager.setRoot(titleLabel.getScene(), View.LOGIN);
     }
 }
