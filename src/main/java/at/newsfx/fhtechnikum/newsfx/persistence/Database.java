@@ -28,7 +28,7 @@ public final class Database {
     }
 
     private static void ensureDbDirectoryExists() {
-        // For jdbc:h2:file:./newsfx-db/newsfx;AUTO_SERVER=TRUE we must ensure ./newsfx-db exists.
+        // For jdbc:h2:file:./newsfx-db/newsfx;AUTO_SERVER=TRUE ensure ./newsfx-db exists.
         String url = AppConfig.dbUrl();
         if (url == null) {
             return;

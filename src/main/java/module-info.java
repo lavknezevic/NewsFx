@@ -8,7 +8,6 @@ module at.newsfx.fhtechnikum.newsfx {
     requires javafx.web;
     requires java.sql;
 
-    // H2 ships as an automatic module
     requires com.h2database;
 
 
