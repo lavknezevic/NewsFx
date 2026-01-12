@@ -103,7 +103,7 @@ public class MainController extends BaseController {
         authService = AppContext.get().authService();
 
         ExternalNewsInterface externalNewsInterface = new RssExternalNewsInterface();
-        InternalNewsInterface internalNewsInterface = new InternalNewsService();
+        InternalNewsInterface internalNewsInterface = AppContext.get().internalNewsService();
         viewModel = new MainViewModel(externalNewsInterface, internalNewsInterface);
 
         bindInternalViewModel();

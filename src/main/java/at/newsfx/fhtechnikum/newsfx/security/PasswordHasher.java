@@ -11,7 +11,7 @@ import java.util.Base64;
 public final class PasswordHasher {
 
     private static final String ALGO = "PBKDF2WithHmacSHA256";
-    private static final int ITERATIONS = 120_000;
+    private static final int ITERATIONS = 600_000;
     private static final int KEY_LENGTH_BITS = 256;
     private static final int SALT_BYTES = 16;
 

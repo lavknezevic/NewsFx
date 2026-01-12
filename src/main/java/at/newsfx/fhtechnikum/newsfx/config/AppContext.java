@@ -1,9 +1,11 @@
 package at.newsfx.fhtechnikum.newsfx.config;
 
 import at.newsfx.fhtechnikum.newsfx.persistence.Database;
+import at.newsfx.fhtechnikum.newsfx.persistence.InternalNewsRepository;
 import at.newsfx.fhtechnikum.newsfx.persistence.UserRepository;
 import at.newsfx.fhtechnikum.newsfx.security.PasswordHasher;
 import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
+import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsService;
 import at.newsfx.fhtechnikum.newsfx.service.user.UserService;
 
 public final class AppContext {
@@ -11,15 +13,19 @@ public final class AppContext {
     private static volatile AppContext instance;
 
     private final UserRepository userRepository;
+    private final InternalNewsRepository internalNewsRepository;
     private final AuthService authService;
     private final UserService userService;
+    private final InternalNewsService internalNewsService;
 
     private AppContext() {
         Database.initSchema();
 
         this.userRepository = new UserRepository();
+        this.internalNewsRepository = new InternalNewsRepository();
         this.authService = new AuthService(userRepository);
         this.userService = new UserService(userRepository, authService);
+        this.internalNewsService = new InternalNewsService(authService, internalNewsRepository);
 
         seedUsersIfEmpty();
     }
@@ -44,6 +50,10 @@ public final class AppContext {
 
     public UserService userService() {
         return userService;
+    }
+
+    public InternalNewsService internalNewsService() {
+        return internalNewsService;
     }
 
     private void seedUsersIfEmpty() {
