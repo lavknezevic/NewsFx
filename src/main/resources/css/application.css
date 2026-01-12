@@ -226,6 +226,17 @@
     -fx-padding: 8 10 8 10;
 }
 
+/* JavaFX TextArea uses nested ScrollPane/Viewport nodes; ensure none of them fall back to white. */
+.text-area .scroll-pane,
+.text-area .scroll-pane .viewport,
+.text-area .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area .content {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
 .search-field {
     -fx-background-color: rgba(255, 255, 255, 0.05);
 }
@@ -289,6 +300,20 @@
 .news-list {
     -fx-background-color: transparent;
     -fx-padding: 0;
+}
+
+/* Default ListView (non news-list) should also be dark/transparent by default. */
+.list-view {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+}
+
+.list-view .virtual-flow {
+    -fx-background-color: transparent;
+}
+
+.list-cell {
+    -fx-text-fill: -fx-text;
 }
 
 .news-list .virtual-flow {

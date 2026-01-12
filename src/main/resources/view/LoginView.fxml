@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="at.newsfx.fhtechnikum.newsfx.controller.LoginController"
+      spacing="14"
+      styleClass="content-area">
+
+    <padding>
+        <Insets top="40" right="40" bottom="40" left="40"/>
+    </padding>
+
+    <Label text="NewsFx Login" styleClass="screen-title"/>
+    <Label text="Use demo accounts: admin/admin, editor/editor, user/user" styleClass="screen-subtitle"/>
+
+    <VBox spacing="10" maxWidth="420" styleClass="card">
+        <padding>
+            <Insets top="18" right="18" bottom="18" left="18"/>
+        </padding>
+
+        <Label text="Username"/>
+        <TextField fx:id="usernameField" promptText="admin"/>
+
+        <Label text="Password"/>
+        <PasswordField fx:id="passwordField" promptText="admin"/>
+
+        <HBox spacing="10">
+            <Button text="Login" onAction="#onLogin" styleClass="primary-button"/>
+        </HBox>
+
+        <Label fx:id="statusLabel" text="" styleClass="meta"/>
+    </VBox>
+
+</VBox>

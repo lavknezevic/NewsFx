@@ -41,6 +41,20 @@
                     onAction="#showInternal"
                     maxWidth="Infinity"
                     styleClass="nav-button"/>
+
+                <Label text="Admin" styleClass="sidebar-section"/>
+
+                <Button text="User Management"
+                    fx:id="userManagementButton"
+                    onAction="#onOpenUserManagement"
+                    maxWidth="Infinity"
+                    styleClass="nav-button"/>
+
+                <Button text="Logout"
+                    fx:id="logoutButton"
+                    onAction="#onLogout"
+                    maxWidth="Infinity"
+                    styleClass="nav-button"/>
         </VBox>
     </left>
 
@@ -104,7 +118,7 @@
                     <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="screen-header">
                         <VBox spacing="2" HBox.hgrow="ALWAYS">
                             <Label text="Internal News" styleClass="screen-title"/>
-                            <Label text="Create and manage your own posts" styleClass="screen-subtitle"/>
+                            <Label text="Create and manage posts" styleClass="screen-subtitle"/>
                         </VBox>
                         <Button text="News Erstellen"
                                 fx:id="createInternalNewsButton"

@@ -1,7 +1,9 @@
 package at.newsfx.fhtechnikum.newsfx.view;
 
 public enum View {
-    MAIN("/view/MainView.fxml");
+    LOGIN("/view/LoginView.fxml"),
+    MAIN("/view/MainView.fxml"),
+    USER_MANAGEMENT("/view/UserManagementView.fxml");
 
     private final String fxmlPath;
 

@@ -15,7 +15,9 @@ public class NewsFxApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = ViewManager.load(View.MAIN);
+        at.newsfx.fhtechnikum.newsfx.config.AppContext.get();
+
+        Parent root = ViewManager.load(View.LOGIN);
 
         Scene scene = new Scene(root, 1400, 1000);
 
