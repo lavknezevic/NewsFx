@@ -41,4 +41,9 @@ public class LoginController extends BaseController {
             ErrorHandler.showTechnicalError("Login failed", e);
         }
     }
+
+    @FXML
+    private void onOpenRegister() {
+        ViewManager.setRoot(usernameField.getScene(), View.REGISTER);
+    }
 }

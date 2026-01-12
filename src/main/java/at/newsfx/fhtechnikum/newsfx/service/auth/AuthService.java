@@ -66,6 +66,29 @@ public class AuthService {
         currentUser.set(new UserAccount(row.id(), row.username(), row.role()));
     }
 
+    public UserAccount register(String username, String password) {
+        String normalized = username == null ? "" : username.trim().toLowerCase(Locale.ROOT);
+        if (normalized.isBlank()) {
+            throw new UserException("Username is required.");
+        }
+        if (!normalized.matches("[a-z0-9._-]{3,64}")) {
+            throw new UserException("Username must be 3-64 chars (a-z, 0-9, . _ -)." );
+        }
+        if (password == null || password.isBlank()) {
+            throw new UserException("Password is required.");
+        }
+        if (password.length() < 4) {
+            throw new UserException("Password must be at least 4 characters.");
+        }
+
+        if (userRepository.findByUsername(normalized).isPresent()) {
+            throw new UserException("Username is already taken.");
+        }
+
+        String hash = PasswordHasher.hash(password);
+        return userRepository.insert(normalized, hash, Role.USER);
+    }
+
     public void logout() {
         currentUser.set(null);
     }

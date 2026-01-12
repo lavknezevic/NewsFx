@@ -6,37 +6,40 @@
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="at.newsfx.fhtechnikum.newsfx.controller.LoginController"
-      spacing="14"
-      styleClass="content-area">
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="at.newsfx.fhtechnikum.newsfx.controller.LoginController"
+           styleClass="root">
 
-    <padding>
-        <Insets top="40" right="40" bottom="40" left="40"/>
-    </padding>
-
-    <Label text="NewsFx Login" styleClass="screen-title"/>
-    <Label text="Use demo accounts: admin/admin, editor/editor, user/user" styleClass="screen-subtitle"/>
-
-    <VBox spacing="10" maxWidth="420" styleClass="card">
+    <VBox spacing="14" maxWidth="520" alignment="CENTER">
         <padding>
-            <Insets top="18" right="18" bottom="18" left="18"/>
+            <Insets top="40" right="40" bottom="40" left="40"/>
         </padding>
 
-        <Label text="Username"/>
-        <TextField fx:id="usernameField" promptText="admin"/>
+        <Label text="NewsFx Login" styleClass="screen-title"/>
+        <Label text="Use demo accounts: admin/admin, editor/editor, user/user" styleClass="screen-subtitle"/>
 
-        <Label text="Password"/>
-        <PasswordField fx:id="passwordField" promptText="admin"/>
+        <VBox spacing="10" maxWidth="420" styleClass="card">
+            <padding>
+                <Insets top="18" right="18" bottom="18" left="18"/>
+            </padding>
 
-        <HBox spacing="10">
-            <Button text="Login" onAction="#onLogin" styleClass="primary-button"/>
-        </HBox>
+            <Label text="Username"/>
+            <TextField fx:id="usernameField" promptText="admin"/>
 
-        <Label fx:id="statusLabel" text="" styleClass="meta"/>
+            <Label text="Password"/>
+            <PasswordField fx:id="passwordField" promptText="admin"/>
+
+            <HBox spacing="10">
+                <Button text="Login" onAction="#onLogin" styleClass="primary-button"/>
+                <Button text="Register" onAction="#onOpenRegister" styleClass="secondary-button"/>
+            </HBox>
+
+            <Label fx:id="statusLabel" text="" styleClass="meta"/>
+        </VBox>
     </VBox>
 
-</VBox>
+</StackPane>
