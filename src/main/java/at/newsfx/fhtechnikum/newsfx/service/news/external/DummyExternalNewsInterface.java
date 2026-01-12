@@ -21,7 +21,8 @@ public class DummyExternalNewsInterface implements ExternalNewsInterface {
                         null,
                         null,
                         null,
-                        true
+                        true,
+                        "https://orf.at/"
                 ),
                 new NewsItem(
                         UUID.randomUUID().toString(),
@@ -33,7 +34,8 @@ public class DummyExternalNewsInterface implements ExternalNewsInterface {
                         null,
                         null,
                         null,
-                        true
+                        true,
+                        "https://orf.at/"
                 )
         );
     }

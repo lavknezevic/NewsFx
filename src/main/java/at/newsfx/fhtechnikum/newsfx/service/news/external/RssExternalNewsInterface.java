@@ -85,7 +85,8 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
                     null,
                     null,
                     null,
-                    true
+                    true,
+                    link
             ));
         }
 

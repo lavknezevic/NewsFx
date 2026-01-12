@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ListView?>
+
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="at.newsfx.fhtechnikum.newsfx.controller.MainController"
@@ -20,12 +20,17 @@
 
     <!-- Sidebar -->
     <left>
-        <VBox spacing="3" styleClass="sidebar">
+        <VBox spacing="10" styleClass="sidebar">
             <padding>
                 <Insets top="16" right="12" bottom="16" left="12"/>
             </padding>
 
-            <Label fx:id="titleLabel" text="News Tool" styleClass="headline"/>
+            <VBox spacing="2" styleClass="sidebar-header">
+                <Label fx:id="titleLabel" text="NewsFx" styleClass="app-title"/>
+                <Label text="Your daily briefing" styleClass="sidebar-subtitle"/>
+            </VBox>
+
+            <Label text="Browse" styleClass="sidebar-section"/>
 
             <Button text="External News"
                     onAction="#showExternal"
@@ -36,6 +41,20 @@
                     onAction="#showInternal"
                     maxWidth="Infinity"
                     styleClass="nav-button"/>
+
+                <Label text="Admin" styleClass="sidebar-section"/>
+
+                <Button text="User Management"
+                    fx:id="userManagementButton"
+                    onAction="#onOpenUserManagement"
+                    maxWidth="Infinity"
+                    styleClass="nav-button"/>
+
+                <Button text="Logout"
+                    fx:id="logoutButton"
+                    onAction="#onLogout"
+                    maxWidth="Infinity"
+                    styleClass="nav-button"/>
         </VBox>
     </left>
 
@@ -44,11 +63,48 @@
         <StackPane styleClass="content-area">
 
             <!-- External News View -->
-            <VBox fx:id="externalView"
-                  spacing="10"
-                  styleClass="tab-content">
-                <Label text="External News (API)" styleClass="headline"/>
-                <ListView fx:id="externalNewsList" VBox.vgrow="ALWAYS"/>
+            <VBox fx:id="externalView" spacing="14" styleClass="tab-content">
+
+                <HBox styleClass="screen-header" spacing="12" alignment="CENTER_LEFT">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="External News" styleClass="screen-title"/>
+                        <Label text="Top headlines &amp; articles" styleClass="screen-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <StackPane fx:id="externalStack" VBox.vgrow="ALWAYS">
+
+                    <!-- PAGE 1: LISTE + FILTER -->
+                    <VBox fx:id="externalListPage" spacing="12">
+                        <HBox spacing="10" styleClass="filter-bar">
+                            <TextField fx:id="externalSearchField"
+                                       promptText="Suche im Titel..."
+                                       HBox.hgrow="ALWAYS"
+                                       styleClass="search-field"/>
+                            <ComboBox fx:id="externalCategoryBox" prefWidth="180" styleClass="combo-field"/>
+                        </HBox>
+
+                        <StackPane VBox.vgrow="ALWAYS" styleClass="card">
+                            <ListView fx:id="externalNewsList" styleClass="news-list" />
+                        </StackPane>
+                    </VBox>
+
+                    <!-- PAGE 2: ARTIKEL-DETAIL (WebView) -->
+                    <BorderPane fx:id="externalArticlePage" visible="false" managed="false" styleClass="article-page">
+                        <top>
+                            <HBox spacing="10" styleClass="article-topbar" alignment="CENTER_LEFT">
+                                <Button text="← Zurück" onAction="#backToExternalList" styleClass="ghost-button" />
+                                <Label fx:id="articleTitleLabel" text="Artikel" styleClass="article-title"/>
+                            </HBox>
+                        </top>
+                        <center>
+                            <StackPane styleClass="card web-card">
+                                <WebView fx:id="articleWebView"/>
+                            </StackPane>
+                        </center>
+                    </BorderPane>
+
+                </StackPane>
             </VBox>
 
             <!-- Internal News View -->
@@ -59,27 +115,32 @@
 
                 <!-- Top -->
                 <top>
-                    <HBox alignment="CENTER_RIGHT" spacing="10">
+                    <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="screen-header">
+                        <VBox spacing="2" HBox.hgrow="ALWAYS">
+                            <Label text="Internal News" styleClass="screen-title"/>
+                            <Label text="Create and manage posts" styleClass="screen-subtitle"/>
+                        </VBox>
                         <Button text="News Erstellen"
                                 fx:id="createInternalNewsButton"
-                                onAction="#onCreateInternalNews"/>
+                                onAction="#onCreateInternalNews"
+                                styleClass="primary-button"/>
                     </HBox>
                 </top>
 
                 <!-- Center -->
                 <center>
-                    <VBox spacing="20">
+                    <VBox spacing="18" styleClass="internal-content">
 
                         <!-- Form -->
                         <VBox fx:id="internalNewsForm"
                               spacing="10"
-                              maxWidth="600">
+                                                            maxWidth="700"
+                                                            styleClass="card form-card">
 
-                            <Label text="Create Internal News"
-                                   styleClass="headline"/>
+                                                        <Label text="Create Internal News" styleClass="form-title"/>
 
                             <TextField fx:id="titleField"
-                                       promptText="Title"/>
+                                                                             promptText="Title"/>
 
                             <TextArea fx:id="contentArea"
                                       promptText="News content"
@@ -90,7 +151,8 @@
                                        promptText="Optional link (https://...)"/>
 
                             <Button text="Choose Image"
-                                    onAction="#onChooseImage"/>
+                                    onAction="#onChooseImage"
+                                    styleClass="secondary-button"/>
 
                             <ImageView fx:id="previewImage"
                                        fitWidth="300"
@@ -99,24 +161,30 @@
                                        visible="false"/>
 
                             <Button text="Attach PDF"
-                                    onAction="#onChoosePdf"/>
+                                    onAction="#onChoosePdf"
+                                    styleClass="secondary-button"/>
 
                             <Label fx:id="pdfLabel"
-                                   text="No PDF selected"/>
+                                   text="No PDF selected"
+                                   styleClass="meta"/>
                         </VBox>
 
                         <!-- Internal News List -->
-                        <ListView fx:id="internalNewsList" VBox.vgrow="ALWAYS"/>
+                        <StackPane VBox.vgrow="ALWAYS" styleClass="card">
+                            <ListView fx:id="internalNewsList" styleClass="news-list" />
+                        </StackPane>
                     </VBox>
                 </center>
 
                 <!-- Bottom -->
                 <bottom>
-                    <HBox spacing="10" alignment="CENTER_RIGHT">
-                        <Button text="Save"
-                                onAction="#onSaveInternalNews"/>
-                        <Button text="Cancel"
-                                onAction="#onCancelInternalNews"/>
+                    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="bottom-actions">
+                    <Button text="Cancel"
+                        onAction="#onCancelInternalNews"
+                        styleClass="ghost-button"/>
+                    <Button text="Save"
+                        onAction="#onSaveInternalNews"
+                        styleClass="primary-button"/>
                     </HBox>
                 </bottom>
 

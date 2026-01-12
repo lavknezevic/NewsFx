@@ -46,6 +46,14 @@ public final class AppConfig {
         return value;
     }
 
+    private static String getOptional(String key, String defaultValue) {
+        String value = PROPERTIES.getProperty(key);
+        if (value == null) {
+            return defaultValue;
+        }
+        return value;
+    }
+
     public static String appName() {
         return getRequired("app.name");
     }
@@ -60,5 +68,17 @@ public final class AppConfig {
 
     public static int httpTimeoutSeconds() {
         return Integer.parseInt(getRequired("news.http.timeoutSeconds"));
+    }
+
+    public static String dbUrl() {
+        return getRequired("db.url");
+    }
+
+    public static String dbUser() {
+        return getOptional("db.user", "sa");
+    }
+
+    public static String dbPassword() {
+        return getOptional("db.password", "");
     }
 }
