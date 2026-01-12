@@ -72,7 +72,7 @@ public class AuthService {
             throw new UserException("Username is required.");
         }
         if (!normalized.matches("[a-z0-9._-]{3,64}")) {
-            throw new UserException("Username must be 3-64 chars (a-z, 0-9, . _ -)." );
+            throw new UserException("Username must be 3-64 lowercase characters (letters, numbers, periods, underscores, or hyphens)." );
         }
         if (password == null || password.isBlank()) {
             throw new UserException("Password is required.");
