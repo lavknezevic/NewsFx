@@ -222,5 +222,6 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/java,maven,intellij,macos,windows
 
 *.lock.db
+*.trace.db
 
 .vscode/*
