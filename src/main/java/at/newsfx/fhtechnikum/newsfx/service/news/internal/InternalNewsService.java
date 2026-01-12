@@ -1,6 +1,5 @@
 package at.newsfx.fhtechnikum.newsfx.service.news.internal;
 
-import at.newsfx.fhtechnikum.newsfx.config.AppContext;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.persistence.InternalNewsRepository;
 import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
@@ -13,10 +12,6 @@ public class InternalNewsService implements InternalNewsInterface {
 
     private final InternalNewsRepository internalNewsRepository;
     private final AuthService authService;
-
-    public InternalNewsService() {
-        this(AppContext.get().authService(), new InternalNewsRepository());
-    }
 
     public InternalNewsService(AuthService authService, InternalNewsRepository internalNewsRepository) {
         this.authService = Objects.requireNonNull(authService, "authService");
