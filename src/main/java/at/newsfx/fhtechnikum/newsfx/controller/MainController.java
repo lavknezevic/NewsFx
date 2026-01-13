@@ -77,6 +77,12 @@ public class MainController extends BaseController {
     private ListView<NewsItem> internalNewsList;
 
     @FXML
+    private VBox favoritesView;
+
+    @FXML
+    private ListView<NewsItem> favoritesList;
+
+    @FXML
     private TextField externalSearchField;
 
     @FXML
@@ -104,10 +110,18 @@ public class MainController extends BaseController {
 
         ExternalNewsInterface externalNewsInterface = new RssExternalNewsInterface();
         InternalNewsInterface internalNewsInterface = AppContext.get().internalNewsService();
-        viewModel = new MainViewModel(externalNewsInterface, internalNewsInterface);
+        viewModel = new MainViewModel(
+                externalNewsInterface, 
+                internalNewsInterface, 
+                AppContext.get().favoritesService(),
+                AppContext.get().favoritesRepository()
+        );
+        
+        viewModel.setCurrentUserId(authService.requireUser().getId());
 
         bindInternalViewModel();
         bindExternalViewModel();
+        bindFavoritesViewModel();
 
         loadExternalNewsAsync();
         loadInternalNewsAsync();
@@ -235,7 +249,11 @@ public class MainController extends BaseController {
 
         externalView.setVisible(false);
         externalView.setManaged(false);
+
+        favoritesView.setVisible(false);
+        favoritesView.setManaged(false);
     }
+    
     @FXML
     private void showExternal() {
         titleLabel.setText("NewsFx – External News");
@@ -245,6 +263,26 @@ public class MainController extends BaseController {
 
         externalView.setVisible(true);
         externalView.setManaged(true);
+
+        favoritesView.setVisible(false);
+        favoritesView.setManaged(false);
+    }
+
+    @FXML
+    private void showFavorites() {
+        titleLabel.setText("NewsFx – Favorites");
+        
+        viewModel.loadInternalNews();
+        viewModel.loadFavorites();
+
+        internalView.setVisible(false);
+        internalView.setManaged(false);
+
+        externalView.setVisible(false);
+        externalView.setManaged(false);
+
+        favoritesView.setVisible(true);
+        favoritesView.setManaged(true);
     }
 
 
@@ -255,10 +293,32 @@ public class MainController extends BaseController {
         boolean canManageInternal = authService.canManageInternalNews();
         internalNewsList.setCellFactory(list -> new NewsItemCell(
                 canManageInternal,
+                true,
                 this::startEditInternalNews,
-                this::deleteInternalNews
+                this::deleteInternalNews,
+                this::toggleFavorite
         ));
         internalNewsList.setFixedCellSize(-1);
+    }
+
+    private void bindFavoritesViewModel() {
+        favoritesList.setItems(viewModel.favoritesNewsProperty());
+        
+        boolean canManageInternal = authService.canManageInternalNews();
+        favoritesList.setCellFactory(list -> new NewsItemCell(
+                canManageInternal,
+                true,
+                this::startEditInternalNews,
+                this::deleteInternalNews,
+                this::toggleFavorite
+        ));
+        favoritesList.setFixedCellSize(-1);
+    }
+
+    private void toggleFavorite(NewsItem item) {
+        if (item != null && !item.isExternal()) {
+            viewModel.toggleFavorite(item.getId());
+        }
     }
 
 

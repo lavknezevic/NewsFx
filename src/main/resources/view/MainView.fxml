@@ -42,6 +42,11 @@
                     maxWidth="Infinity"
                     styleClass="nav-button"/>
 
+            <Button text="Favorites"
+                    onAction="#showFavorites"
+                    maxWidth="Infinity"
+                    styleClass="nav-button"/>
+
                 <Label text="Admin" styleClass="sidebar-section"/>
 
                 <Button text="User Management"
@@ -189,6 +194,22 @@
                 </bottom>
 
             </BorderPane>
+
+            <!-- Favorites View -->
+            <VBox fx:id="favoritesView" spacing="14" styleClass="tab-content" visible="false" managed="false">
+
+                <HBox styleClass="screen-header" spacing="12" alignment="CENTER_LEFT">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Favorites" styleClass="screen-title"/>
+                        <Label text="Your bookmarked articles" styleClass="screen-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <StackPane VBox.vgrow="ALWAYS" styleClass="card">
+                    <ListView fx:id="favoritesList" styleClass="news-list" />
+                </StackPane>
+
+            </VBox>
 
         </StackPane>
     </center>

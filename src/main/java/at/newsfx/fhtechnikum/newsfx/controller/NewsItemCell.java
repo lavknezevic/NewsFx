@@ -19,17 +19,25 @@ import java.util.function.Consumer;
 public class NewsItemCell extends ListCell<NewsItem> {
 
     private final boolean enableInternalActions;
+    private final boolean enableFavorites;
     private final Consumer<NewsItem> onEdit;
     private final Consumer<NewsItem> onDelete;
+    private final Consumer<NewsItem> onFavoriteToggle;
 
     public NewsItemCell() {
-        this(false, null, null);
+        this(false, false, null, null, null);
     }
 
     public NewsItemCell(boolean enableInternalActions, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete) {
+        this(enableInternalActions, false, onEdit, onDelete, null);
+    }
+
+    public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle) {
         this.enableInternalActions = enableInternalActions;
+        this.enableFavorites = enableFavorites;
         this.onEdit = onEdit;
         this.onDelete = onDelete;
+        this.onFavoriteToggle = onFavoriteToggle;
     }
 
     @Override
@@ -79,9 +87,20 @@ public class NewsItemCell extends ListCell<NewsItem> {
             box.getChildren().add(pdfButton);
         }
 
-        if (enableInternalActions && !item.isExternal()) {
-            HBox actions = new HBox(10);
+        HBox actions = new HBox(10);
 
+        if (enableFavorites && !item.isExternal()) {
+            Button favoriteButton = new Button("★ Favorite");
+            favoriteButton.getStyleClass().add("favorite-button");
+            favoriteButton.setOnAction(e -> {
+                if (onFavoriteToggle != null) {
+                    onFavoriteToggle.accept(item);
+                }
+            });
+            actions.getChildren().add(favoriteButton);
+        }
+
+        if (enableInternalActions && !item.isExternal()) {
             Button editButton = new Button("Edit");
             editButton.setOnAction(e -> {
                 if (onEdit != null) {
@@ -97,6 +116,9 @@ public class NewsItemCell extends ListCell<NewsItem> {
             });
 
             actions.getChildren().addAll(editButton, deleteButton);
+        }
+
+        if (!actions.getChildren().isEmpty()) {
             box.getChildren().add(actions);
         }
 
