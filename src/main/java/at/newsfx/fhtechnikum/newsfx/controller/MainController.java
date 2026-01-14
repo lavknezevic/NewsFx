@@ -12,6 +12,7 @@ import at.newsfx.fhtechnikum.newsfx.util.error.UserException;
 import at.newsfx.fhtechnikum.newsfx.view.View;
 import at.newsfx.fhtechnikum.newsfx.view.ViewManager;
 import at.newsfx.fhtechnikum.newsfx.viewmodel.MainViewModel;
+import javafx.application.Platform;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -272,8 +273,8 @@ public class MainController extends BaseController {
     private void showFavorites() {
         titleLabel.setText("NewsFx – Favorites");
         
-        viewModel.loadInternalNews();
-        viewModel.loadFavorites();
+        loadInternalNewsAsync();
+        loadFavoritesAsync();
 
         internalView.setVisible(false);
         internalView.setManaged(false);
@@ -296,7 +297,8 @@ public class MainController extends BaseController {
                 true,
                 this::startEditInternalNews,
                 this::deleteInternalNews,
-                this::toggleFavorite
+                this::toggleFavorite,
+                newsId -> viewModel.isFavorite(newsId)
         ));
         internalNewsList.setFixedCellSize(-1);
     }
@@ -310,7 +312,8 @@ public class MainController extends BaseController {
                 true,
                 this::startEditInternalNews,
                 this::deleteInternalNews,
-                this::toggleFavorite
+                this::toggleFavorite,
+                newsId -> viewModel.isFavorite(newsId)
         ));
         favoritesList.setFixedCellSize(-1);
     }
@@ -345,7 +348,7 @@ public class MainController extends BaseController {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
-                viewModel.loadInternalNews();
+                Platform.runLater(() -> viewModel.loadInternalNews());
                 return null;
             }
         };
@@ -353,6 +356,25 @@ public class MainController extends BaseController {
         task.setOnFailed(e ->
                 ErrorHandler.showTechnicalError(
                         "Failed to load internal news",
+                        task.getException()
+                )
+        );
+
+        new Thread(task).start();
+    }
+
+    private void loadFavoritesAsync() {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                Platform.runLater(() -> viewModel.loadFavorites());
+                return null;
+            }
+        };
+
+        task.setOnFailed(e ->
+                ErrorHandler.showTechnicalError(
+                        "Failed to load favorites",
                         task.getException()
                 )
         );

@@ -15,6 +15,7 @@ import java.awt.*;
 import java.io.File;
 import java.net.URI;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class NewsItemCell extends ListCell<NewsItem> {
 
@@ -23,21 +24,27 @@ public class NewsItemCell extends ListCell<NewsItem> {
     private final Consumer<NewsItem> onEdit;
     private final Consumer<NewsItem> onDelete;
     private final Consumer<NewsItem> onFavoriteToggle;
+    private final Predicate<String> isFavorited;
 
     public NewsItemCell() {
-        this(false, false, null, null, null);
+        this(false, false, null, null, null, null);
     }
 
     public NewsItemCell(boolean enableInternalActions, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete) {
-        this(enableInternalActions, false, onEdit, onDelete, null);
+        this(enableInternalActions, false, onEdit, onDelete, null, null);
     }
 
     public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle) {
+        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, null);
+    }
+
+    public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle, Predicate<String> isFavorited) {
         this.enableInternalActions = enableInternalActions;
         this.enableFavorites = enableFavorites;
         this.onEdit = onEdit;
         this.onDelete = onDelete;
         this.onFavoriteToggle = onFavoriteToggle;
+        this.isFavorited = isFavorited;
     }
 
     @Override
@@ -90,14 +97,20 @@ public class NewsItemCell extends ListCell<NewsItem> {
         HBox actions = new HBox(10);
 
         if (enableFavorites && !item.isExternal()) {
-            Button favoriteButton = new Button("★ Favorite");
-            favoriteButton.getStyleClass().add("favorite-button");
-            favoriteButton.setOnAction(e -> {
+            boolean isFav = isFavorited != null && isFavorited.test(item.getId());
+            Button starButton = new Button(isFav ? "★" : "☆");
+            starButton.getStyleClass().addAll("star-button", isFav ? "star-filled" : "star-empty");
+            starButton.setOnAction(e -> {
                 if (onFavoriteToggle != null) {
                     onFavoriteToggle.accept(item);
+                    // Provide immediate feedback
+                    boolean nowFav = isFavorited != null && isFavorited.test(item.getId());
+                    starButton.setText(nowFav ? "★" : "☆");
+                    starButton.getStyleClass().removeAll("star-filled", "star-empty");
+                    starButton.getStyleClass().add(nowFav ? "star-filled" : "star-empty");
                 }
             });
-            actions.getChildren().add(favoriteButton);
+            actions.getChildren().add(starButton);
         }
 
         if (enableInternalActions && !item.isExternal()) {
