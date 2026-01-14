@@ -101,6 +101,52 @@
     -fx-padding: 6 8 10 8;
 }
 
+/* ===== External news layout ===== */
+.external-pane {
+    -fx-background-color: transparent;
+    -fx-spacing: 12;
+}
+
+.filter-card {
+    -fx-background-color: transparent;
+    -fx-padding: 6 4 12 4;
+    -fx-spacing: 12;
+}
+
+.filter-label {
+    -fx-text-fill: -fx-muted;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.filter-field,
+.filter-combo {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.news-list-wrapper {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.news-list-wrapper .list-view,
+.news-list-wrapper .list-view .virtual-flow {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+}
+
+.external-news-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 12 0;
+    -fx-border-color: transparent;
+}
+
+.external-news-list .list-cell:filled:selected,
+.external-news-list .list-cell:filled:hover {
+    -fx-background-color: transparent;
+}
+
 .internal-content {
     -fx-padding: 0 8 8 8;
 }
@@ -110,16 +156,18 @@
 }
 
 .card {
-    -fx-background-color: -fx-surface-2;
+    -fx-background-color: transparent;
     -fx-background-radius: 18;
-    -fx-border-color: -fx-border;
+    -fx-border-color: transparent;
     -fx-border-radius: 18;
-    -fx-border-width: 1;
-    -fx-padding: 14;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 28, 0.18, 0, 10);
+    -fx-border-width: 0;
+    -fx-padding: 8;
 }
 
 .form-card {
+    -fx-background-color: -fx-surface-2;
+    -fx-border-color: -fx-border;
+    -fx-border-width: 1;
     -fx-padding: 16;
 }
 
@@ -326,34 +374,32 @@
 }
 
 .news-list .list-cell:filled {
-    -fx-background-color: rgba(255, 255, 255, 0.045);
-    -fx-background-radius: 16;
-    -fx-background-insets: 0 0 12 0;
-    -fx-border-color: rgba(255, 255, 255, 0.09);
-    -fx-border-radius: 16;
-    -fx-border-insets: 0 0 12 0;
-    -fx-border-width: 1;
-    -fx-padding: 14;
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-radius: 0;
+    -fx-border-insets: 0;
+    -fx-border-width: 0;
+    -fx-padding: 4 8;
 }
 
 .news-list .list-cell:filled:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.065);
-    -fx-border-color: rgba(79, 124, 255, 0.22);
+    -fx-background-color: transparent;
 }
 
 .news-list .list-cell:filled:selected {
-    -fx-background-color: rgba(79, 124, 255, 0.18);
-    -fx-border-color: rgba(79, 124, 255, 0.55);
+    -fx-background-color: transparent;
 }
 
 .news-list .list-cell .headline {
-    -fx-font-size: 15px;
-    -fx-font-weight: 800;
-    -fx-text-fill: -fx-text;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #fff;
 }
 
 .news-list .list-cell .label {
-    -fx-text-fill: -fx-muted;
+    -fx-text-fill: #aaa;
 }
 
 .hyperlink {
@@ -371,6 +417,55 @@
 .news-list .list-cell .button {
     -fx-font-size: 12px;
     -fx-padding: 7 10;
+}
+
+/* Card that wraps a news item */
+.news-card {
+    -fx-background-color: #111C33;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 14 16 16 16;
+    -fx-spacing: 10;
+}
+
+.news-card:hover {
+    -fx-background-color: #162540;
+}
+
+.news-card-header {
+    -fx-spacing: 2;
+}
+
+.news-card-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-text;
+}
+
+.news-card-meta {
+    -fx-font-size: 11px;
+    -fx-text-fill: -fx-muted;
+}
+
+.news-card-summary {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-muted;
+}
+
+.news-card-link {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-accent;
+}
+
+.news-card-link:hover {
+    -fx-text-fill: #8AA6FF;
+}
+
+.news-card-actions {
+    -fx-alignment: center-right;
+    -fx-spacing: 10;
 }
 
 .star-button {
@@ -547,4 +642,60 @@
     -fx-font-size: 16px;
     -fx-font-weight: 800;
     -fx-text-fill: -fx-text;
+}
+
+/* ===== Tab Pane Styling ===== */
+.tab-pane {
+    -fx-background-color: #0a0a0a;
+}
+
+.external-tabs {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 8 0;
+}
+
+.external-tabs > .tab-header-area {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 10 0;
+    -fx-border-color: transparent;
+}
+
+.external-tabs .tab-header-background {
+    -fx-background-color: transparent;
+}
+
+.external-tabs .tab {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-background-radius: 12 12 0 0;
+    -fx-text-fill: -fx-muted;
+    -fx-padding: 10 18;
+    -fx-font-size: 12;
+    -fx-font-weight: 700;
+    -fx-border-width: 0;
+}
+
+.external-tabs .tab .tab-label {
+    -fx-text-fill: rgba(233, 238, 247, 0.7);
+}
+
+.external-tabs .tab:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+}
+
+.external-tabs .tab:hover .tab-label {
+    -fx-text-fill: #E9EEF7;
+}
+
+.external-tabs .tab:selected {
+    -fx-background-color: #111C33;
+    -fx-border-color: -fx-accent;
+    -fx-border-width: 0 0 3 0;
+}
+
+.external-tabs .tab:selected .tab-label {
+    -fx-text-fill: #E9EEF7;
+}
+
+.external-tabs .tab-content-area {
+    -fx-background-color: transparent;
 }

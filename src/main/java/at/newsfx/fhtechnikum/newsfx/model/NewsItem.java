@@ -15,6 +15,7 @@ public class NewsItem {
     private final String linkUrl;
     private final String pdfPath;
     private final String articleUrl;
+    private final String category;
 
 
     public NewsItem(
@@ -30,6 +31,23 @@ public class NewsItem {
             boolean external,
             String articleUrl
     ) {
+        this(id, title, summary, content, source, publishedAt, imageUrl, linkUrl, pdfPath, external, articleUrl, null);
+    }
+
+    public NewsItem(
+            String id,
+            String title,
+            String summary,
+            String content,
+            String source,
+            LocalDateTime publishedAt,
+            String imageUrl,
+            String linkUrl,
+            String pdfPath,
+            boolean external,
+            String articleUrl,
+            String category
+    ) {
         this.id = id;
         this.title = title;
         this.summary = summary;
@@ -41,6 +59,7 @@ public class NewsItem {
         this.pdfPath = pdfPath;
         this.external = external;
         this.articleUrl = articleUrl;
+        this.category = category != null ? category : "General";
     }
 
     public String getId() {
@@ -85,5 +104,9 @@ public class NewsItem {
 
     public String getArticleUrl() {
         return articleUrl;
+    }
+
+    public String getCategory() {
+        return category;
     }
 }

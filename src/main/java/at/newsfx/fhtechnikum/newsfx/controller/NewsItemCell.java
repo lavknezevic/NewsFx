@@ -1,6 +1,7 @@
 package at.newsfx.fhtechnikum.newsfx.controller;
 
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -10,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Region;
 
 import java.awt.*;
 import java.io.File;
@@ -57,23 +59,38 @@ public class NewsItemCell extends ListCell<NewsItem> {
             return;
         }
 
-
         Label title = new Label(item.getTitle());
-        title.getStyleClass().add("headline");
+        title.getStyleClass().addAll("headline", "news-card-title");
+        title.setWrapText(true);
+
+        Label sourceLabel = new Label(item.getSource() != null ? item.getSource() : (item.isExternal() ? "External" : "Internal"));
+        sourceLabel.getStyleClass().add("news-card-meta");
 
         ImageView imageView = null;
         if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
             Image image = new Image(item.getImageUrl(), true);
             imageView = new ImageView(image);
-            imageView.setFitWidth(250);
+            imageView.setFitWidth(420);
             imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
+            imageView.getStyleClass().add("news-card-image");
         }
 
-        Label summary = new Label(item.getSummary());
+        // Strip HTML tags from summary
+        String cleanSummary = stripHtml(item.getSummary());
+        Label summary = new Label(cleanSummary);
         summary.setWrapText(true);
+        summary.getStyleClass().add("news-card-summary");
+        summary.setMaxWidth(Double.MAX_VALUE);
+        summary.setMinHeight(Region.USE_PREF_SIZE);
 
-        VBox box = new VBox(8);
-        box.getChildren().add(title);
+        VBox header = new VBox(2);
+        header.getChildren().addAll(title, sourceLabel);
+        header.getStyleClass().add("news-card-header");
+
+        VBox box = new VBox(10);
+        box.getStyleClass().add("news-card");
+        box.getChildren().add(header);
 
         if (imageView != null) {
             box.getChildren().add(imageView);
@@ -81,9 +98,13 @@ public class NewsItemCell extends ListCell<NewsItem> {
 
         box.getChildren().add(summary);
 
-        if (item.getLinkUrl() != null && !item.getLinkUrl().isBlank()) {
-            Hyperlink link = new Hyperlink(item.getLinkUrl());
-            link.setOnAction(e -> openLink(item.getLinkUrl()));
+        String articleUrl = item.getArticleUrl() != null && !item.getArticleUrl().isBlank()
+                ? item.getArticleUrl()
+                : item.getLinkUrl();
+        if (articleUrl != null && !articleUrl.isBlank()) {
+            Hyperlink link = new Hyperlink("Open original article");
+            link.getStyleClass().add("news-card-link");
+            link.setOnAction(e -> openLink(articleUrl));
             box.getChildren().add(link);
         }
 
@@ -94,7 +115,9 @@ public class NewsItemCell extends ListCell<NewsItem> {
             box.getChildren().add(pdfButton);
         }
 
-        HBox actions = new HBox(10);
+    HBox actions = new HBox(10);
+    actions.getStyleClass().add("news-card-actions");
+    actions.setAlignment(Pos.CENTER_RIGHT);
 
         if (enableFavorites && !item.isExternal()) {
             boolean isFav = isFavorited != null && isFavorited.test(item.getId());
@@ -160,5 +183,34 @@ public class NewsItemCell extends ListCell<NewsItem> {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private String stripHtml(String html) {
+        if (html == null || html.isBlank()) {
+            return "";
+        }
+        // Remove HTML tags
+        String text = html.replaceAll("<[^>]*>", "");
+        // Decode HTML entities
+        text = text.replace("&amp;", "&");
+        text = text.replace("&lt;", "<");
+        text = text.replace("&gt;", ">");
+        text = text.replace("&quot;", "\"");
+        text = text.replace("&#39;", "'");
+        text = text.replace("&nbsp;", " ");
+        // Trim
+        text = text.trim();
+        
+        // Limit to approximately 3 lines (about 180 characters)
+        if (text.length() > 180) {
+            text = text.substring(0, 180);
+            // Find last space to avoid cutting words
+            int lastSpace = text.lastIndexOf(' ');
+            if (lastSpace > 150) {
+                text = text.substring(0, lastSpace);
+            }
+            text = text.trim() + "...";
+        }
+        return text;
     }
 }

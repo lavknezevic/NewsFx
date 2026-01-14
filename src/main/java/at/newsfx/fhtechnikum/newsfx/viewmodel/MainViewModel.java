@@ -4,13 +4,17 @@ import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.persistence.FavoritesRepository;
 import at.newsfx.fhtechnikum.newsfx.service.FavoritesService;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.ExternalNewsInterface;
+import at.newsfx.fhtechnikum.newsfx.service.news.external.RssExternalNewsInterface;
+import at.newsfx.fhtechnikum.newsfx.service.news.external.RssSource;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsInterface;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainViewModel {
 
@@ -30,6 +34,10 @@ public class MainViewModel {
     private final ObservableList<NewsItem> favoritesNews =
             FXCollections.observableArrayList();
 
+    // For tab-based filtering
+    private final Map<String, ObservableList<NewsItem>> externalNewsBySource = new HashMap<>();
+    private final ObservableList<String> externalSources = FXCollections.observableArrayList();
+
 
     public MainViewModel(ExternalNewsInterface externalNewsInterface, InternalNewsInterface internalNewsInterface, FavoritesService favoritesService, FavoritesRepository favoritesRepository) {
         this.externalNewsInterface = externalNewsInterface;
@@ -37,6 +45,16 @@ public class MainViewModel {
         this.favoritesService = favoritesService;
         this.favoritesRepository = favoritesRepository;
         title.set("Welcome to NewsFx");
+        initializeExternalSources();
+    }
+
+    private void initializeExternalSources() {
+        if (externalNewsInterface instanceof RssExternalNewsInterface rss) {
+            for (RssSource source : rss.getSources()) {
+                externalNewsBySource.put(source.getDisplayName(), FXCollections.observableArrayList());
+                externalSources.add(source.getDisplayName());
+            }
+        }
     }
 
     public ObservableList<NewsItem> externalNewsProperty() {
@@ -51,12 +69,31 @@ public class MainViewModel {
         return favoritesNews;
     }
 
+    public ObservableList<String> externalSourcesProperty() {
+        return externalSources;
+    }
+
     public void setCurrentUserId(long userId) {
         this.currentUserId = userId;
     }
 
     public void loadExternalNews() {
-        externalNews.setAll(externalNewsInterface.loadExternalLatest());
+        List<NewsItem> all = externalNewsInterface.loadExternalLatest();
+        externalNews.setAll(all);
+        
+        // Distribute news by source
+        for (ObservableList<NewsItem> list : externalNewsBySource.values()) {
+            list.clear();
+        }
+        
+        for (NewsItem item : all) {
+            String source = item.getSource();
+            externalNewsBySource.getOrDefault(source, FXCollections.observableArrayList()).add(item);
+        }
+    }
+
+    public ObservableList<NewsItem> getExternalNewsBySource(String source) {
+        return externalNewsBySource.getOrDefault(source, FXCollections.observableArrayList());
     }
 
     public void loadInternalNews() {
