@@ -58,6 +58,9 @@ public class MainController extends BaseController {
     public Label pdfLabel;
 
     @FXML
+    private HBox internalNewsActions;
+
+    @FXML
     private Button userManagementButton;
 
     @FXML
@@ -479,6 +482,9 @@ public class MainController extends BaseController {
         internalNewsForm.setVisible(true);
         internalNewsForm.setManaged(true);
 
+        internalNewsActions.setVisible(true);
+        internalNewsActions.setManaged(true);
+
         createInternalNewsButton.setVisible(false);
         createInternalNewsButton.setManaged(false);
 
@@ -541,6 +547,8 @@ public class MainController extends BaseController {
         previewImage.setVisible(false);
         internalNewsForm.setVisible(false);
         internalNewsForm.setManaged(false);
+        internalNewsActions.setVisible(false);
+        internalNewsActions.setManaged(false);
 
         boolean canManageInternal = authService.canManageInternalNews();
         createInternalNewsButton.setVisible(canManageInternal);
@@ -634,6 +642,9 @@ public class MainController extends BaseController {
 
             internalNewsForm.setVisible(true);
             internalNewsForm.setManaged(true);
+
+            internalNewsActions.setVisible(true);
+            internalNewsActions.setManaged(true);
 
             createInternalNewsButton.setVisible(false);
             createInternalNewsButton.setManaged(false);

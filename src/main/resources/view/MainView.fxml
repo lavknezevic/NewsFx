@@ -155,7 +155,7 @@
 
                 <!-- Bottom -->
                 <bottom>
-                    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="bottom-actions">
+                    <HBox fx:id="internalNewsActions" spacing="10" alignment="CENTER_RIGHT" styleClass="bottom-actions" visible="false" managed="false">
                     <Button text="Cancel"
                         onAction="#onCancelInternalNews"
                         styleClass="ghost-button"/>
