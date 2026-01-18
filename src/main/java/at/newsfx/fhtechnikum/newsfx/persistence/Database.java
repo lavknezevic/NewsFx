@@ -78,7 +78,7 @@ public final class Database {
                 CREATE TABLE IF NOT EXISTS internal_news (
                     id VARCHAR(64) PRIMARY KEY,
                     title VARCHAR(256) NOT NULL,
-                    summary VARCHAR(256) NOT NULL,
+                    summary CLOB NOT NULL,
                     content CLOB NOT NULL,
                     source VARCHAR(64) NOT NULL,
                     published_at TIMESTAMP NOT NULL,
@@ -101,6 +101,27 @@ public final class Database {
                     CONSTRAINT fk_user_favorites_news_id FOREIGN KEY (news_id) REFERENCES internal_news(id)
                 )
             """);
+
+            st.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS comments (
+                        id VARCHAR(64) PRIMARY KEY,
+                        news_id VARCHAR(64) NOT NULL,
+                        text CLOB NOT NULL,
+                        created_at TIMESTAMP NOT NULL,
+                        created_by BIGINT NOT NULL,
+                        created_by_username VARCHAR(255) NOT NULL,
+                
+                        CONSTRAINT fk_comments_news
+                            FOREIGN KEY (news_id)
+                            REFERENCES internal_news(id)
+                            ON DELETE CASCADE,
+                
+                        CONSTRAINT fk_comments_created_by
+                            FOREIGN KEY (created_by)
+                            REFERENCES users(id)
+                    )
+            """);
+
         } catch (SQLException e) {
             throw new TechnicalException("Failed to initialize database schema", e);
         }

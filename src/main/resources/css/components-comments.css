@@ -1,0 +1,70 @@
+/* Comments component */
+
+.comments-section {
+    /* same surface as cards */
+    -fx-background-color: -fx-surface-2;
+    -fx-background-radius: 16;
+
+    /* consistent border */
+    -fx-border-color: -fx-border;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+
+    /* card-like padding; extra bottom padding so actions don't feel glued */
+    -fx-padding: 14 14 18 14;
+
+    /* subtle shadow */
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.35),
+            18,
+            0.15,
+            0,
+            6
+    );
+}
+
+.comment-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -fx-muted;
+    -fx-padding: 0 0 4 2;
+}
+
+.comments-section .list-view {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-control-inner-background: transparent;
+    -fx-padding: 4 0 4 0;
+}
+
+/* Spacing between comment rows */
+.comments-section .list-cell {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 8 0;
+}
+
+.comments-section .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+}
+
+.comments-section .list-cell:filled:selected {
+    -fx-background-color: rgba(79, 124, 255, 0.22);
+    -fx-border-color: rgba(79, 124, 255, 0.45);
+}
+
+.comment-item {
+    -fx-padding: 10 12;
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-radius: 12;
+}
+
+.comment-meta {
+    -fx-font-size: 11px;
+    -fx-text-fill: -fx-muted;
+}
+
+.comments-section .label {
+    -fx-text-fill: -fx-text;
+}

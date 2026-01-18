@@ -1,5 +1,6 @@
 package at.newsfx.fhtechnikum.newsfx.viewmodel;
 
+import at.newsfx.fhtechnikum.newsfx.model.Comment;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.persistence.FavoritesRepository;
 import at.newsfx.fhtechnikum.newsfx.service.FavoritesService;
@@ -80,12 +81,12 @@ public class MainViewModel {
     public void loadExternalNews() {
         List<NewsItem> all = externalNewsInterface.loadExternalLatest();
         externalNews.setAll(all);
-        
+
         // Distribute news by source
         for (ObservableList<NewsItem> list : externalNewsBySource.values()) {
             list.clear();
         }
-        
+
         for (NewsItem item : all) {
             String source = item.getSource();
             externalNewsBySource.getOrDefault(source, FXCollections.observableArrayList()).add(item);
@@ -96,8 +97,19 @@ public class MainViewModel {
         return externalNewsBySource.getOrDefault(source, FXCollections.observableArrayList());
     }
 
-    public void loadInternalNews() {
-        internalNews.setAll(internalNewsInterface.loadInternalNews());
+    /**
+     * Fetches internal news from persistence (does not touch JavaFX state).
+     * Use {@link #setInternalNews(List)} on the JavaFX thread to publish.
+     */
+    public List<NewsItem> fetchInternalNews() {
+        return internalNewsInterface.loadInternalNews();
+    }
+
+    /**
+     * Publishes internal news into the observable list (must run on JavaFX thread).
+     */
+    public void setInternalNews(List<NewsItem> items) {
+        internalNews.setAll(items);
     }
 
     public void loadFavorites() {
@@ -148,11 +160,17 @@ public class MainViewModel {
         }
 
         // Fallback: if not found locally, refresh from persistence
-        loadInternalNews();
+        setInternalNews(fetchInternalNews());
     }
 
     public void deleteInternalNewsRuntime(String id) {
         internalNewsInterface.deleteInternalNews(id);
         internalNews.removeIf(item -> item != null && id.equals(item.getId()));
     }
+
+    public void addCommentRuntime(Comment comment) {
+        internalNewsInterface.addComment(comment);
+    }
+
+
 }

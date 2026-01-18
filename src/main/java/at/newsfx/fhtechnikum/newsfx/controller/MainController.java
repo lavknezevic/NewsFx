@@ -1,6 +1,7 @@
 package at.newsfx.fhtechnikum.newsfx.controller;
 
 import at.newsfx.fhtechnikum.newsfx.config.AppContext;
+import at.newsfx.fhtechnikum.newsfx.model.Comment;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.ExternalNewsInterface;
@@ -96,6 +97,9 @@ public class MainController extends BaseController {
 
     private MainViewModel viewModel;
 
+    private FilteredList<NewsItem> filteredExternalNews;
+
+
     @Override
     public void onViewLoaded() {
         authService = AppContext.get().authService();
@@ -103,12 +107,12 @@ public class MainController extends BaseController {
         ExternalNewsInterface externalNewsInterface = new RssExternalNewsInterface();
         InternalNewsInterface internalNewsInterface = AppContext.get().internalNewsService();
         viewModel = new MainViewModel(
-                externalNewsInterface, 
-                internalNewsInterface, 
+                externalNewsInterface,
+                internalNewsInterface,
                 AppContext.get().favoritesService(),
                 AppContext.get().favoritesRepository()
         );
-        
+
         viewModel.setCurrentUserId(authService.requireUser().getId());
 
         bindInternalViewModel();
@@ -133,6 +137,7 @@ public class MainController extends BaseController {
 
         internalNewsList.setVisible(true);
         internalNewsList.setManaged(true);
+
     }
 
     private void bindExternalViewModel() {
@@ -201,7 +206,7 @@ public class MainController extends BaseController {
         ObservableList<NewsItem> sourceNews = viewModel.getExternalNewsBySource(sourceName);
         FilteredList<NewsItem> filteredSourceNews = new FilteredList<>(sourceNews, item -> true);
         sourceNewsList.setItems(filteredSourceNews);
-        
+
         // Double-click to view article in WebView
         sourceNewsList.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
@@ -297,31 +302,31 @@ public class MainController extends BaseController {
 
         WebView webView = new WebView();
         WebEngine engine = webView.getEngine();
-        
+
         BorderPane layout = new BorderPane();
-        
+
         // Top bar with title and close button
         HBox topBar = new HBox(10);
         topBar.setStyle("-fx-background-color: #1a1a1a; -fx-padding: 10;");
         topBar.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        
+
         Label titleLabel = new Label(item.getTitle());
         titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14; -fx-font-weight: bold;");
         titleLabel.setWrapText(true);
-        
+
         Button closeBtn = new Button("Close");
         closeBtn.setStyle("-fx-padding: 8 15; -fx-font-size: 12;");
         closeBtn.setOnAction(e -> stage.close());
-        
+
         HBox.setHgrow(titleLabel, javafx.scene.layout.Priority.ALWAYS);
         topBar.getChildren().addAll(titleLabel, closeBtn);
-        
+
         layout.setTop(topBar);
         layout.setCenter(webView);
-        
+
         Scene scene = new Scene(layout);
         stage.setScene(scene);
-        
+
         // Load the URL
         engine.load(item.getArticleUrl());
         stage.show();
@@ -343,7 +348,7 @@ public class MainController extends BaseController {
         favoritesView.setVisible(false);
         favoritesView.setManaged(false);
     }
-    
+
     @FXML
     private void showExternal() {
         titleLabel.setText("NewsFx – External News");
@@ -361,7 +366,7 @@ public class MainController extends BaseController {
     @FXML
     private void showFavorites() {
         titleLabel.setText("NewsFx – Favorites");
-        
+
         loadInternalNewsAsync();
         loadFavoritesAsync();
 
@@ -381,28 +386,38 @@ public class MainController extends BaseController {
         internalNewsList.setItems(viewModel.internalNewsProperty());
 
         boolean canManageInternal = authService.canManageInternalNews();
-        internalNewsList.setCellFactory(list -> new NewsItemCell(
+        internalNewsList.setCellFactory(list -> {
+            NewsItemCell cell = new NewsItemCell(
                 canManageInternal,
                 true,
                 this::startEditInternalNews,
                 this::deleteInternalNews,
                 this::toggleFavorite,
-                newsId -> viewModel.isFavorite(newsId)
-        ));
-        internalNewsList.setFixedCellSize(-1);
+                newsId -> viewModel.isFavorite(newsId),
+                this::onAddComment
+        );
+
+        cell.prefWidthProperty().bind(
+                internalNewsList.widthProperty().subtract(16)
+        );
+
+            return cell;
+        });
+
     }
 
     private void bindFavoritesViewModel() {
         favoritesList.setItems(viewModel.favoritesNewsProperty());
-        
+
         boolean canManageInternal = authService.canManageInternalNews();
         favoritesList.setCellFactory(list -> new NewsItemCell(
-                canManageInternal,
-                true,
-                this::startEditInternalNews,
-                this::deleteInternalNews,
-                this::toggleFavorite,
-                newsId -> viewModel.isFavorite(newsId)
+            canManageInternal,
+            true,
+            this::startEditInternalNews,
+            this::deleteInternalNews,
+            this::toggleFavorite,
+            newsId -> viewModel.isFavorite(newsId),
+            this::onAddComment
         ));
         favoritesList.setFixedCellSize(-1);
     }
@@ -434,13 +449,17 @@ public class MainController extends BaseController {
     }
 
     private void loadInternalNewsAsync() {
-        Task<Void> task = new Task<>() {
+        Task<List<NewsItem>> task = new Task<>() {
             @Override
-            protected Void call() {
-                Platform.runLater(() -> viewModel.loadInternalNews());
-                return null;
+            protected List<NewsItem> call() {
+                return viewModel.fetchInternalNews();
             }
         };
+
+        task.setOnSucceeded(e -> {
+            List<NewsItem> items = task.getValue();
+            Platform.runLater(() -> viewModel.setInternalNews(items));
+        });
 
         task.setOnFailed(e ->
                 ErrorHandler.showTechnicalError(
@@ -510,8 +529,7 @@ public class MainController extends BaseController {
         NewsItem newsItem = new NewsItem(
                 id,
                 titleField.getText(),
-                contentArea.getText().substring(
-                        0, Math.min(100, contentArea.getText().length())),
+                contentArea.getText(),
                 contentArea.getText(),
                 "Internal",
                 LocalDateTime.now(),
@@ -528,7 +546,6 @@ public class MainController extends BaseController {
             viewModel.updateInternalNewsRuntime(newsItem);
         }
 
-        System.out.println("Saved news: " + newsItem.getTitle());
 
         clearForm();
     }
@@ -560,6 +577,7 @@ public class MainController extends BaseController {
         pdfLabel.setText("No PDF selected");
         selectedPdfPath = null;
         editingInternalNewsId = null;
+
     }
 
     private void showValidationAlert() {
@@ -694,4 +712,26 @@ public class MainController extends BaseController {
         authService.logout();
         ViewManager.setRoot(titleLabel.getScene(), View.LOGIN);
     }
+
+    public void onAddComment(NewsItem newsItem, String text) {
+
+        if (text == null || text.isBlank()) return;
+
+        Comment comment = new Comment(
+                UUID.randomUUID().toString(),
+                newsItem.getId(),
+                text,
+                LocalDateTime.now(),
+                authService.currentUserProperty().get().getId(),
+                authService.currentUserProperty().get().getUsername()
+        );
+
+        // persist
+        viewModel.addCommentRuntime(comment);
+
+        // update UI state
+        newsItem.addComment(comment);
+    }
+
+
 }

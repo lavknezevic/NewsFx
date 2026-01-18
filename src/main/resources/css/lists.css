@@ -1,0 +1,120 @@
+/* ListViews, external/internal/favorites list styling */
+
+/* ===== External news layout ===== */
+.external-pane {
+    -fx-background-color: transparent;
+    -fx-spacing: 12;
+}
+
+.filter-card {
+    -fx-background-color: transparent;
+    -fx-padding: 6 4 12 4;
+    -fx-spacing: 12;
+}
+
+.filter-label {
+    -fx-text-fill: -fx-muted;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.filter-field,
+.filter-combo {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.news-list-wrapper {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.news-list-wrapper .list-view,
+.news-list-wrapper .list-view .virtual-flow {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+}
+
+.external-news-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 12 0;
+    -fx-border-color: transparent;
+}
+
+.external-news-list .list-cell:filled:selected,
+.external-news-list .list-cell:filled:hover {
+    -fx-background-color: transparent;
+}
+
+/* ===== Lists (News cards) ===== */
+.news-list {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Default ListView (non news-list) should also be dark/transparent by default. */
+.list-view {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+}
+
+.list-view .virtual-flow {
+    -fx-background-color: transparent;
+}
+
+.list-cell {
+    -fx-text-fill: -fx-text;
+}
+
+.news-list .virtual-flow {
+    -fx-background-color: transparent;
+}
+
+.news-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Spacing around each card (this is what makes Favorites look nicer). */
+.news-list .list-cell:filled {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-radius: 0;
+    -fx-border-insets: 0;
+    -fx-border-width: 0;
+    -fx-padding: 4 8;
+}
+
+.news-list .list-cell:filled:hover {
+    -fx-background-color: transparent;
+}
+
+.news-list .list-cell:filled:selected {
+    -fx-background-color: transparent;
+}
+
+.news-list .list-cell .headline {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #fff;
+}
+
+.news-list .list-cell .label {
+    -fx-text-fill: #aaa;
+}
+
+.news-list .list-cell .button {
+    -fx-font-size: 12px;
+    -fx-padding: 7 10;
+}
+
+/* Internal list should behave like news-list too (so Internal matches Favorites). */
+.internal-news-list .list-cell,
+.internal-news-list .list-cell:filled {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+    -fx-padding: 4 8;
+}

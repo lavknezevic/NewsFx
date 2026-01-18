@@ -1,21 +1,32 @@
 package at.newsfx.fhtechnikum.newsfx.controller;
 
+import at.newsfx.fhtechnikum.newsfx.model.Comment;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Region;
+import javafx.geometry.Insets;
 
 import java.awt.*;
 import java.io.File;
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -25,11 +36,14 @@ public class NewsItemCell extends ListCell<NewsItem> {
     private final boolean enableFavorites;
     private final Consumer<NewsItem> onEdit;
     private final Consumer<NewsItem> onDelete;
+    private final BiConsumer<NewsItem, String> onAddComment;
+    private static final DateTimeFormatter COMMENT_DATE_FORMAT =
+            DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     private final Consumer<NewsItem> onFavoriteToggle;
     private final Predicate<String> isFavorited;
 
     public NewsItemCell() {
-        this(false, false, null, null, null, null);
+        this(false, false, null, null, null, null, null);
     }
 
     public NewsItemCell(boolean enableInternalActions, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete) {
@@ -37,14 +51,19 @@ public class NewsItemCell extends ListCell<NewsItem> {
     }
 
     public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle) {
-        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, null);
+        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, (Predicate<String>) null);
     }
 
     public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle, Predicate<String> isFavorited) {
+        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, isFavorited, null);
+    }
+
+    public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle, Predicate<String> isFavorited, BiConsumer<NewsItem, String> onAddComment) {
         this.enableInternalActions = enableInternalActions;
         this.enableFavorites = enableFavorites;
         this.onEdit = onEdit;
         this.onDelete = onDelete;
+        this.onAddComment = onAddComment;
         this.onFavoriteToggle = onFavoriteToggle;
         this.isFavorited = isFavorited;
     }
@@ -113,6 +132,11 @@ public class NewsItemCell extends ListCell<NewsItem> {
             Button pdfButton = new Button("Open PDF");
             pdfButton.setOnAction(e -> openPdf(item.getPdfPath()));
             box.getChildren().add(pdfButton);
+        }
+
+        // Comments are available for internal news for all roles
+        if (!item.isExternal()) {
+            box.getChildren().add(createCommentsSection(item));
         }
 
     HBox actions = new HBox(10);
@@ -185,6 +209,75 @@ public class NewsItemCell extends ListCell<NewsItem> {
         alert.showAndWait();
     }
 
+    private VBox createCommentsSection(NewsItem item) {
+
+        VBox section = new VBox(6);
+        section.getStyleClass().add("comments-section");
+
+        Label title = new Label("Comments");
+        title.getStyleClass().add("comment-title");
+
+        ListView<Comment> commentsList = new ListView<>();
+        commentsList.setItems(item.getComments());
+        commentsList.setPrefHeight(110);
+        commentsList.setMaxHeight(160);
+
+
+        commentsList.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(Comment comment, boolean empty) {
+                super.updateItem(comment, empty);
+
+                if (empty || comment == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                Label meta = new Label(comment.getCreatedByUsername() + " · " +
+                        comment.getCreatedAt().format(COMMENT_DATE_FORMAT));
+                meta.getStyleClass().add("comment-meta");
+
+
+                Label text = new Label(comment.getText());
+                text.setWrapText(true);
+
+                VBox box = new VBox(4, meta, text);
+                box.getStyleClass().add("comment-item");
+
+                setGraphic(box);
+                setText(null);
+            }
+        });
+
+        TextField commentField = new TextField();
+        commentField.setPromptText("Write a comment...");
+
+        Button addButton = new Button("Add");
+
+        // Allow read-only comments rendering in contexts where adding isn't wired.
+        boolean canAdd = onAddComment != null;
+        commentField.setDisable(!canAdd);
+        addButton.setDisable(!canAdd);
+
+        addButton.setOnAction(e -> {
+            String text = commentField.getText();
+            if (text == null || text.isBlank()) return;
+
+            if (onAddComment != null) {
+                onAddComment.accept(item, text);
+            }
+
+            commentField.clear();
+        });
+
+        HBox input = new HBox(6, commentField, addButton);
+        HBox.setHgrow(commentField, Priority.ALWAYS);
+
+        section.getChildren().addAll(title, commentsList, input);
+        return section;
+    }
+
+
     private String stripHtml(String html) {
         if (html == null || html.isBlank()) {
             return "";
@@ -200,7 +293,7 @@ public class NewsItemCell extends ListCell<NewsItem> {
         text = text.replace("&nbsp;", " ");
         // Trim
         text = text.trim();
-        
+
         // Limit to approximately 3 lines (about 180 characters)
         if (text.length() > 180) {
             text = text.substring(0, 180);

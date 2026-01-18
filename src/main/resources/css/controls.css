@@ -1,0 +1,182 @@
+/* Buttons, inputs, hyperlinks */
+
+/* ===== Buttons ===== */
+.button {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-text-fill: -fx-text;
+    -fx-font-weight: 700;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-padding: 9 14;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+    -fx-border-color: rgba(255, 255, 255, 0.18);
+}
+
+.button:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.primary-button {
+    -fx-background-color: linear-gradient(to bottom right, -fx-accent, -fx-accent-2);
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(79, 124, 255, 0.35), 18, 0.18, 0, 8);
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #6B90FF, #3EE7FF);
+}
+
+.secondary-button {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-border-color: rgba(255, 255, 255, 0.14);
+}
+
+.ghost-button {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.16);
+}
+
+.ghost-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+}
+
+.nav-button {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 10 12;
+    -fx-font-size: 13px;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.nav-button:hover {
+    -fx-background-color: rgba(79, 124, 255, 0.14);
+    -fx-border-color: rgba(79, 124, 255, 0.28);
+}
+
+.nav-button:pressed {
+    -fx-background-color: rgba(79, 124, 255, 0.20);
+}
+
+/* ===== Inputs ===== */
+.text-field,
+.text-area {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-control-inner-background: rgba(255, 255, 255, 0.05);
+    -fx-text-fill: -fx-text;
+    -fx-prompt-text-fill: -fx-muted-2;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-padding: 10 12;
+    -fx-highlight-fill: rgba(79, 124, 255, 0.35);
+    -fx-highlight-text-fill: -fx-text;
+}
+
+.text-area {
+    -fx-inner-background: rgba(255, 255, 255, 0.05);
+}
+
+.text-field:focused,
+.text-area:focused {
+    -fx-border-color: rgba(79, 124, 255, 0.75);
+    -fx-background-color: rgba(79, 124, 255, 0.10), rgba(255, 255, 255, 0.05);
+    -fx-background-insets: 0, 0;
+}
+
+.text-area .content {
+    -fx-background-color: -fx-control-inner-background;
+    -fx-background-radius: 10;
+    -fx-padding: 8 10 8 10;
+}
+
+/* JavaFX TextArea uses nested ScrollPane/Viewport nodes; ensure none of them fall back to white. */
+.text-area .scroll-pane,
+.text-area .scroll-pane .viewport,
+.text-area .viewport {
+    -fx-background-color: transparent;
+}
+
+.text-area .content {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.search-field {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+}
+
+.combo-box {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+}
+
+.combo-box:focused {
+    -fx-border-color: rgba(79, 124, 255, 0.75);
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .arrow {
+    -fx-background-color: rgba(233, 238, 247, 0.78);
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: -fx-text;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: -fx-surface;
+    -fx-control-inner-background: -fx-surface;
+    -fx-background-insets: 0;
+    -fx-padding: 6;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.12);
+}
+
+.combo-box-popup .list-view .virtual-flow {
+    -fx-background-color: transparent;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text;
+    -fx-padding: 10 12;
+    -fx-background-insets: 0;
+}
+
+.combo-box-popup .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.combo-box-popup .list-cell:filled:selected,
+.combo-box-popup .list-cell:filled:selected:hover {
+    -fx-background-color: rgba(79, 124, 255, 0.26);
+    -fx-text-fill: -fx-text;
+}
+
+.hyperlink {
+    -fx-text-fill: -fx-accent;
+    -fx-border-color: transparent;
+    -fx-underline: false;
+    -fx-padding: 2 0 0 0;
+}
+
+.hyperlink:hover {
+    -fx-underline: true;
+    -fx-text-fill: #8AA6FF;
+}
