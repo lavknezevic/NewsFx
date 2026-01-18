@@ -1,6 +1,7 @@
 package at.newsfx.fhtechnikum.newsfx.app;
 
 import at.newsfx.fhtechnikum.newsfx.config.AppConfig;
+import at.newsfx.fhtechnikum.newsfx.config.AppContext;
 import at.newsfx.fhtechnikum.newsfx.util.resource.ResourceUtil;
 import at.newsfx.fhtechnikum.newsfx.view.View;
 import at.newsfx.fhtechnikum.newsfx.view.ViewManager;
@@ -15,11 +16,11 @@ public class NewsFxApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        at.newsfx.fhtechnikum.newsfx.config.AppContext.get();
+        AppContext.get();
 
         Parent root = ViewManager.load(View.LOGIN);
 
-        Scene scene = new Scene(root, 1400, 1000);
+        Scene scene = new Scene(root, AppConfig.windowWidth(), AppConfig.windowHeight());
 
         scene.getStylesheets().add(
                 ResourceUtil.get("/css/application.css").toExternalForm()
@@ -30,8 +31,8 @@ public class NewsFxApplication extends Application {
         );
 
         stage.setTitle(AppConfig.windowTitle());
-        stage.setMinWidth(900);
-        stage.setMinHeight(600);
+        stage.setMinWidth(AppConfig.windowMinWidth());
+        stage.setMinHeight(AppConfig.windowMinHeight());
         stage.setScene(scene);
         stage.show();
     }

@@ -1,0 +1,67 @@
+/* Misc components and small tweaks */
+
+.web-view {
+    -fx-background-color: transparent;
+}
+
+/* ===== Loading Indicators ===== */
+.tab-loading,
+.loading-box {
+    -fx-padding: 40 20;
+    -fx-alignment: center;
+}
+
+.loading-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #808080;
+}
+
+.progress-indicator {
+    -fx-progress-color: #4a90d9;
+}
+
+/* ===== Scrollbars ===== */
+.scroll-bar:horizontal,
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .track {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-radius: 999;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.18);
+    -fx-background-radius: 999;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.26);
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ===== Small tweaks ===== */
+.filter-bar {
+    -fx-padding: 2 8 8 8;
+}
+
+.article-topbar {
+    -fx-padding: 6 8 10 8;
+}
+
+.article-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-text;
+}

@@ -16,7 +16,7 @@
     <top>
         <HBox spacing="10" alignment="CENTER_LEFT" styleClass="screen-header">
             <Button text="← Back" onAction="#onBack" styleClass="ghost-button"/>
-            <VBox spacing="2">
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
                 <Label text="User Management" styleClass="screen-title"/>
                 <Label text="Change user roles" styleClass="screen-subtitle"/>
             </VBox>
@@ -24,18 +24,18 @@
     </top>
 
     <center>
-        <VBox spacing="12" styleClass="content-area">
+        <VBox spacing="16" styleClass="content-area">
             <padding>
                 <Insets top="16" right="16" bottom="16" left="16"/>
             </padding>
 
-            <Label fx:id="statusLabel" text="" styleClass="meta"/>
+            <Label fx:id="statusLabel" text="" styleClass="status-message"/>
 
-            <VBox styleClass="card" spacing="10">
+            <VBox styleClass="card" spacing="0">
                 <padding>
-                    <Insets top="16" right="16" bottom="16" left="16"/>
+                    <Insets top="0" right="0" bottom="0" left="0"/>
                 </padding>
-                <ListView fx:id="usersList" prefHeight="520" styleClass="news-list" />
+                <ListView fx:id="usersList" prefHeight="400" styleClass="users-list" />
             </VBox>
         </VBox>
     </center>

@@ -11,7 +11,6 @@ import java.sql.Statement;
 public final class Database {
 
     private Database() {
-        // utility
     }
 
     public static Connection getConnection() {
@@ -28,7 +27,6 @@ public final class Database {
     }
 
     private static void ensureDbDirectoryExists() {
-        // For jdbc:h2:file:./newsfx-db/newsfx;AUTO_SERVER=TRUE ensure ./newsfx-db exists.
         String url = AppConfig.dbUrl();
         if (url == null) {
             return;
@@ -78,7 +76,7 @@ public final class Database {
                 CREATE TABLE IF NOT EXISTS internal_news (
                     id VARCHAR(64) PRIMARY KEY,
                     title VARCHAR(256) NOT NULL,
-                    summary VARCHAR(256) NOT NULL,
+                    summary CLOB NOT NULL,
                     content CLOB NOT NULL,
                     source VARCHAR(64) NOT NULL,
                     published_at TIMESTAMP NOT NULL,
@@ -91,6 +89,49 @@ public final class Database {
                     CONSTRAINT fk_internal_news_last_modified_by FOREIGN KEY (last_modified_by) REFERENCES users(id)
                 )
             """);
+
+            st.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS user_favorites (
+                    user_id BIGINT NOT NULL,
+                    news_id VARCHAR(64) NOT NULL,
+                    PRIMARY KEY (user_id, news_id),
+                    CONSTRAINT fk_user_favorites_user_id FOREIGN KEY (user_id) REFERENCES users(id),
+                    CONSTRAINT fk_user_favorites_news_id FOREIGN KEY (news_id) REFERENCES internal_news(id)
+                )
+            """);
+
+            st.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS comments (
+                        id VARCHAR(64) PRIMARY KEY,
+                        news_id VARCHAR(64) NOT NULL,
+                        text CLOB NOT NULL,
+                        created_at TIMESTAMP NOT NULL,
+                        created_by BIGINT NOT NULL,
+                        created_by_username VARCHAR(255) NOT NULL,
+                
+                        CONSTRAINT fk_comments_news
+                            FOREIGN KEY (news_id)
+                            REFERENCES internal_news(id)
+                            ON DELETE CASCADE,
+                
+                        CONSTRAINT fk_comments_created_by
+                            FOREIGN KEY (created_by)
+                            REFERENCES users(id)
+                    )
+            """);
+
+            st.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS reactions (
+                    target_type VARCHAR(16) NOT NULL,
+                    target_id VARCHAR(64) NOT NULL,
+                    emoji VARCHAR(32) NOT NULL,
+                    user_id BIGINT NOT NULL,
+                    created_at TIMESTAMP NOT NULL,
+                    PRIMARY KEY (target_type, target_id, emoji, user_id),
+                    CONSTRAINT fk_reactions_user_id FOREIGN KEY (user_id) REFERENCES users(id)
+                )
+            """);
+
         } catch (SQLException e) {
             throw new TechnicalException("Failed to initialize database schema", e);
         }

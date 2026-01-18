@@ -1,0 +1,82 @@
+/* User Management page */
+
+.users-list .list-cell {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 0 0 1 0;
+}
+
+.users-list .list-cell:last {
+    -fx-border-width: 0;
+}
+
+.user-row {
+    -fx-background-color: transparent;
+    -fx-padding: 12 16;
+    -fx-border-radius: 0;
+}
+
+.user-row:hover {
+    -fx-background-color: rgba(79, 124, 255, 0.08);
+}
+
+.user-name {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -fx-text;
+    -fx-min-width: 160px;
+}
+
+.role-badge {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-padding: 4 10;
+    -fx-background-radius: 6;
+    -fx-text-alignment: CENTER;
+    -fx-border-radius: 6;
+}
+
+.role-admin {
+    -fx-background-color: rgba(239, 68, 68, 0.20);
+    -fx-text-fill: #EF4444;
+    -fx-border-color: rgba(239, 68, 68, 0.3);
+    -fx-border-width: 1;
+}
+
+.role-editor {
+    -fx-background-color: rgba(79, 124, 255, 0.20);
+    -fx-text-fill: #4F7CFF;
+    -fx-border-color: rgba(79, 124, 255, 0.3);
+    -fx-border-width: 1;
+}
+
+.role-user {
+    -fx-background-color: rgba(34, 211, 238, 0.20);
+    -fx-text-fill: #22D3EE;
+    -fx-border-color: rgba(34, 211, 238, 0.3);
+    -fx-border-width: 1;
+}
+
+.role-combo {
+    -fx-min-width: 140;
+    -fx-padding: 6 10;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.status-message {
+    -fx-font-size: 13px;
+    -fx-min-height: 20px;
+    -fx-text-fill: -fx-muted;
+}
+
+.status-success {
+    -fx-text-fill: #10B981;
+    -fx-font-weight: 500;
+}
+
+.status-error {
+    -fx-text-fill: #EF4444;
+    -fx-font-weight: 500;
+}

@@ -52,7 +52,7 @@ public class RegisterController extends BaseController {
 
             statusLabel.setText("Account created. You can now log in.");
 
-            // Go back to login and prefill username
+
             ViewManager.setRoot(usernameField.getScene(), View.LOGIN);
         } catch (UserException e) {
             statusLabel.setText(e.getMessage());

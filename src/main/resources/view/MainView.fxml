@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
@@ -12,7 +13,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.web.WebView?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tab?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="at.newsfx.fhtechnikum.newsfx.controller.MainController"
@@ -42,6 +44,11 @@
                     maxWidth="Infinity"
                     styleClass="nav-button"/>
 
+            <Button text="Favorites"
+                    onAction="#showFavorites"
+                    maxWidth="Infinity"
+                    styleClass="nav-button"/>
+
                 <Label text="Admin" styleClass="sidebar-section"/>
 
                 <Button text="User Management"
@@ -62,8 +69,8 @@
     <center>
         <StackPane styleClass="content-area">
 
-            <!-- External News View -->
-            <VBox fx:id="externalView" spacing="14" styleClass="tab-content">
+            <!-- External News View with Tabs -->
+            <VBox fx:id="externalView" spacing="12" styleClass="tab-content">
 
                 <HBox styleClass="screen-header" spacing="12" alignment="CENTER_LEFT">
                     <VBox spacing="2" HBox.hgrow="ALWAYS">
@@ -72,39 +79,10 @@
                     </VBox>
                 </HBox>
 
-                <StackPane fx:id="externalStack" VBox.vgrow="ALWAYS">
+                <TabPane fx:id="externalSourceTabPane" VBox.vgrow="ALWAYS" styleClass="external-tabs" tabClosingPolicy="UNAVAILABLE">
+                    <!-- Tabs will be dynamically created for each RSS source -->
+                </TabPane>
 
-                    <!-- PAGE 1: LISTE + FILTER -->
-                    <VBox fx:id="externalListPage" spacing="12">
-                        <HBox spacing="10" styleClass="filter-bar">
-                            <TextField fx:id="externalSearchField"
-                                       promptText="Suche im Titel..."
-                                       HBox.hgrow="ALWAYS"
-                                       styleClass="search-field"/>
-                            <ComboBox fx:id="externalCategoryBox" prefWidth="180" styleClass="combo-field"/>
-                        </HBox>
-
-                        <StackPane VBox.vgrow="ALWAYS" styleClass="card">
-                            <ListView fx:id="externalNewsList" styleClass="news-list" />
-                        </StackPane>
-                    </VBox>
-
-                    <!-- PAGE 2: ARTIKEL-DETAIL (WebView) -->
-                    <BorderPane fx:id="externalArticlePage" visible="false" managed="false" styleClass="article-page">
-                        <top>
-                            <HBox spacing="10" styleClass="article-topbar" alignment="CENTER_LEFT">
-                                <Button text="← Zurück" onAction="#backToExternalList" styleClass="ghost-button" />
-                                <Label fx:id="articleTitleLabel" text="Artikel" styleClass="article-title"/>
-                            </HBox>
-                        </top>
-                        <center>
-                            <StackPane styleClass="card web-card">
-                                <WebView fx:id="articleWebView"/>
-                            </StackPane>
-                        </center>
-                    </BorderPane>
-
-                </StackPane>
             </VBox>
 
             <!-- Internal News View -->
@@ -130,6 +108,12 @@
                 <!-- Center -->
                 <center>
                     <VBox spacing="18" styleClass="internal-content">
+
+                        <!-- Loading indicator for internal news -->
+                        <VBox fx:id="internalLoadingBox" alignment="CENTER" spacing="12" visible="false" managed="false">
+                            <ProgressIndicator prefWidth="40" prefHeight="40"/>
+                            <Label text="Loading internal news..." styleClass="loading-label"/>
+                        </VBox>
 
                         <!-- Form -->
                         <VBox fx:id="internalNewsForm"
@@ -171,14 +155,16 @@
 
                         <!-- Internal News List -->
                         <StackPane VBox.vgrow="ALWAYS" styleClass="card">
-                            <ListView fx:id="internalNewsList" styleClass="news-list" />
+                            <!-- Internal News List -->
+                            <ListView fx:id="internalNewsList"
+                                      VBox.vgrow="ALWAYS" styleClass="news-list internal-news-list"/>
                         </StackPane>
                     </VBox>
                 </center>
 
                 <!-- Bottom -->
                 <bottom>
-                    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="bottom-actions">
+                    <HBox fx:id="internalNewsActions" spacing="10" alignment="CENTER_RIGHT" styleClass="bottom-actions" visible="false" managed="false">
                     <Button text="Cancel"
                         onAction="#onCancelInternalNews"
                         styleClass="ghost-button"/>
@@ -189,6 +175,28 @@
                 </bottom>
 
             </BorderPane>
+
+            <!-- Favorites View -->
+            <VBox fx:id="favoritesView" spacing="14" styleClass="tab-content" visible="false" managed="false">
+
+                <HBox styleClass="screen-header" spacing="12" alignment="CENTER_LEFT">
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Favorites" styleClass="screen-title"/>
+                        <Label text="Your bookmarked articles" styleClass="screen-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Loading indicator for favorites -->
+                <VBox fx:id="favoritesLoadingBox" alignment="CENTER" spacing="12" visible="false" managed="false">
+                    <ProgressIndicator prefWidth="40" prefHeight="40"/>
+                    <Label text="Loading favorites..." styleClass="loading-label"/>
+                </VBox>
+
+                <StackPane VBox.vgrow="ALWAYS" styleClass="card">
+                    <ListView fx:id="favoritesList" styleClass="news-list" />
+                </StackPane>
+
+            </VBox>
 
         </StackPane>
     </center>

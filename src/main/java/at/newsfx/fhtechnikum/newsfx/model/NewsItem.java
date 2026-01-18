@@ -1,5 +1,9 @@
 package at.newsfx.fhtechnikum.newsfx.model;
 
+import at.newsfx.fhtechnikum.newsfx.config.AppConfig;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.time.LocalDateTime;
 
 public class NewsItem {
@@ -15,7 +19,10 @@ public class NewsItem {
     private final String linkUrl;
     private final String pdfPath;
     private final String articleUrl;
+    private final String category;
 
+    private final ObservableList<Comment> comments =
+            FXCollections.observableArrayList();
 
     public NewsItem(
             String id,
@@ -30,6 +37,23 @@ public class NewsItem {
             boolean external,
             String articleUrl
     ) {
+        this(id, title, summary, content, source, publishedAt, imageUrl, linkUrl, pdfPath, external, articleUrl, null);
+    }
+
+    public NewsItem(
+            String id,
+            String title,
+            String summary,
+            String content,
+            String source,
+            LocalDateTime publishedAt,
+            String imageUrl,
+            String linkUrl,
+            String pdfPath,
+            boolean external,
+            String articleUrl,
+            String category
+    ) {
         this.id = id;
         this.title = title;
         this.summary = summary;
@@ -41,6 +65,7 @@ public class NewsItem {
         this.pdfPath = pdfPath;
         this.external = external;
         this.articleUrl = articleUrl;
+        this.category = category != null ? category : AppConfig.defaultCategory();
     }
 
     public String getId() {
@@ -85,5 +110,18 @@ public class NewsItem {
 
     public String getArticleUrl() {
         return articleUrl;
+    }
+
+
+    public ObservableList<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+    }
+
+    public String getCategory() {
+        return category;
     }
 }

@@ -6,7 +6,6 @@ import java.util.Objects;
 public final class ResourceUtil {
 
     private ResourceUtil() {
-        // utility
     }
 
     public static URL get(String path) {

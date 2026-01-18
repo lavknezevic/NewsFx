@@ -40,6 +40,8 @@ public class AuthService {
         return user == null ? null : user.getRole();
     }
 
+
+
     public boolean canManageInternalNews() {
         UserAccount user = requireUser();
         return user.getRole().canManageInternalNews();

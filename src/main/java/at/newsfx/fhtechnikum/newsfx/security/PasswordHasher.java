@@ -1,5 +1,6 @@
 package at.newsfx.fhtechnikum.newsfx.security;
 
+import at.newsfx.fhtechnikum.newsfx.config.AppConfig;
 import at.newsfx.fhtechnikum.newsfx.util.error.TechnicalException;
 
 import javax.crypto.SecretKeyFactory;
@@ -11,22 +12,21 @@ import java.util.Base64;
 public final class PasswordHasher {
 
     private static final String ALGO = "PBKDF2WithHmacSHA256";
-    private static final int ITERATIONS = 600_000;
-    private static final int KEY_LENGTH_BITS = 256;
-    private static final int SALT_BYTES = 16;
 
     private PasswordHasher() {
-        // utility
     }
 
     public static String hash(String password) {
-        byte[] salt = new byte[SALT_BYTES];
+        int iterations = AppConfig.passwordIterations();
+        int keyLengthBits = AppConfig.passwordKeyLengthBits();
+        int saltBytes = AppConfig.passwordSaltBytes();
+
+        byte[] salt = new byte[saltBytes];
         new SecureRandom().nextBytes(salt);
 
-        byte[] derived = pbkdf2(password.toCharArray(), salt, ITERATIONS, KEY_LENGTH_BITS);
+        byte[] derived = pbkdf2(password.toCharArray(), salt, iterations, keyLengthBits);
 
-        // format: pbkdf2$iterations$saltB64$hashB64
-        return "pbkdf2$" + ITERATIONS + "$" + Base64.getEncoder().encodeToString(salt) + "$" + Base64.getEncoder().encodeToString(derived);
+        return "pbkdf2$" + iterations + "$" + Base64.getEncoder().encodeToString(salt) + "$" + Base64.getEncoder().encodeToString(derived);
     }
 
     public static boolean verify(String password, String stored) {

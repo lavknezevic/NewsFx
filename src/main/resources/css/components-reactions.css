@@ -1,0 +1,126 @@
+/* Reactions component */
+
+.reactions-bar {
+    -fx-spacing: 8;
+    -fx-padding: 4 0 2 0;
+    padding: 4 0 2 0;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.reaction-chip {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 6;
+}
+
+.reaction-button {
+    -fx-padding: 4 6;
+    padding: 4 6;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    border-radius: 999;
+    -fx-background-color: rgba(15, 23, 42, 0.6);
+    background-color: rgba(15, 23, 42, 0.6);
+    -fx-border-color: rgba(148, 163, 184, 0.35);
+    border-color: rgba(148, 163, 184, 0.35);
+    -fx-border-width: 1;
+    border-width: 1;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+    -fx-effect: none;
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+    min-width: 30;
+    min-height: 30;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-content-display: graphic-only;
+}
+
+.reaction-button:hover {
+    -fx-border-color: rgba(226, 232, 240, 0.6);
+    -fx-background-color: rgba(30, 41, 59, 0.75);
+    border-color: rgba(226, 232, 240, 0.6);
+    background-color: rgba(30, 41, 59, 0.75);
+}
+
+.reaction-button:pressed,
+.reaction-button:armed,
+.reaction-button:focused {
+    -fx-background-color: rgba(30, 41, 59, 0.75);
+    background-color: rgba(30, 41, 59, 0.75);
+    -fx-border-color: rgba(226, 232, 240, 0.6);
+    border-color: rgba(226, 232, 240, 0.6);
+}
+
+.reaction-emoji {
+    -fx-font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-text;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Segoe UI", sans-serif;
+    font-size: 14px;
+    -fx-min-width: 18;
+    -fx-pref-width: 18;
+    min-width: 18;
+    -fx-alignment: CENTER;
+    -fx-text-overrun: clip;
+    -fx-text-alignment: CENTER;
+    -fx-ellipsis-string: "";
+}
+
+.reaction-icon {
+    -fx-effect: none;
+}
+
+.reaction-count {
+    -fx-font-size: 11px;
+    -fx-font-weight: 800;
+    -fx-text-fill: rgba(226, 232, 240, 0.9);
+    -fx-background-color: rgba(148, 163, 184, 0.22);
+    -fx-background-radius: 999;
+    -fx-padding: 1 6;
+    font-size: 11px;
+    font-weight: 800;
+    background-color: rgba(148, 163, 184, 0.22);
+    padding: 1 6;
+}
+
+/* Stronger state when user has reacted */
+.reaction-button.reacted {
+    -fx-border-color: rgba(79, 124, 255, 0.75);
+    -fx-background-color: rgba(30, 64, 175, 0.18);
+    border-color: rgba(79, 124, 255, 0.75);
+    background-color: rgba(30, 64, 175, 0.18);
+}
+
+.reaction-button.reacted:hover {
+    -fx-border-color: rgba(99, 102, 241, 0.9);
+    -fx-background-color: rgba(30, 64, 175, 0.25);
+    border-color: rgba(99, 102, 241, 0.9);
+    background-color: rgba(30, 64, 175, 0.25);
+}
+
+/* Per-emoji accent tints (looks good even if emoji font is monochrome) */
+.reaction-like {
+    -fx-border-color: rgba(79, 124, 255, 0.45);
+    border-color: rgba(79, 124, 255, 0.45);
+}
+
+.reaction-love {
+    -fx-border-color: rgba(244, 63, 94, 0.45);
+    border-color: rgba(244, 63, 94, 0.45);
+}
+
+.reaction-laugh {
+    -fx-border-color: rgba(245, 158, 11, 0.45);
+    border-color: rgba(245, 158, 11, 0.45);
+}
+
+.reaction-wow {
+    -fx-border-color: rgba(34, 211, 238, 0.45);
+    border-color: rgba(34, 211, 238, 0.45);
+}
+
+.reaction-sad {
+    -fx-border-color: rgba(148, 163, 184, 0.5);
+    border-color: rgba(148, 163, 184, 0.5);
+}
