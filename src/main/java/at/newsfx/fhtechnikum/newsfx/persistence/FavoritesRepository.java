@@ -71,4 +71,15 @@ public class FavoritesRepository {
         }
         return result;
     }
+
+
+    public void removeAllFavoritesForNews(String newsId) {
+        String sql = "DELETE FROM user_favorites WHERE news_id = ?";
+        try (Connection con = Database.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, newsId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new TechnicalException("Failed to remove favorites for news", e);
+        }
+    }
 }

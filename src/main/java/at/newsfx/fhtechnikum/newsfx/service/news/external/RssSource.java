@@ -2,9 +2,6 @@ package at.newsfx.fhtechnikum.newsfx.service.news.external;
 
 import java.util.Objects;
 
-/**
- * Represents an RSS feed source with metadata
- */
 public class RssSource {
     private final String name;
     private final String url;

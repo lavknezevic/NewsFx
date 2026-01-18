@@ -11,7 +11,6 @@ import java.sql.Statement;
 public final class Database {
 
     private Database() {
-        // utility
     }
 
     public static Connection getConnection() {
@@ -28,7 +27,6 @@ public final class Database {
     }
 
     private static void ensureDbDirectoryExists() {
-        // For jdbc:h2:file:./newsfx-db/newsfx;AUTO_SERVER=TRUE ensure ./newsfx-db exists.
         String url = AppConfig.dbUrl();
         if (url == null) {
             return;
@@ -120,6 +118,18 @@ public final class Database {
                             FOREIGN KEY (created_by)
                             REFERENCES users(id)
                     )
+            """);
+
+            st.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS reactions (
+                    target_type VARCHAR(16) NOT NULL,
+                    target_id VARCHAR(64) NOT NULL,
+                    emoji VARCHAR(32) NOT NULL,
+                    user_id BIGINT NOT NULL,
+                    created_at TIMESTAMP NOT NULL,
+                    PRIMARY KEY (target_type, target_id, emoji, user_id),
+                    CONSTRAINT fk_reactions_user_id FOREIGN KEY (user_id) REFERENCES users(id)
+                )
             """);
 
         } catch (SQLException e) {

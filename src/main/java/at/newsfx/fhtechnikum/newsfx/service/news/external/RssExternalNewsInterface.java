@@ -1,5 +1,6 @@
 package at.newsfx.fhtechnikum.newsfx.service.news.external;
 
+import at.newsfx.fhtechnikum.newsfx.config.AppConfig;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.util.error.TechnicalException;
 import at.newsfx.fhtechnikum.newsfx.util.error.UserException;
@@ -24,21 +25,31 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
             .followRedirects(HttpClient.Redirect.NORMAL)
             .build();
 
-    private static final List<RssSource> DEFAULT_SOURCES = List.of(
-            new RssSource("derstandard", "https://www.derstandard.at/rss", "Der Standard (AT)"),
-            new RssSource("orf", "https://rss.orf.at/news.xml", "ORF News (AT)"),
-            new RssSource("bbc_europe", "https://feeds.bbci.co.uk/news/world/europe/rss.xml", "BBC Europe (EN)"),
-            new RssSource("bbc_us", "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml", "BBC US & Canada (EN)")
-    );
-
     private final List<RssSource> sources;
 
     public RssExternalNewsInterface() {
-        this.sources = DEFAULT_SOURCES;
+        this.sources = loadSourcesFromConfig();
     }
 
     public RssExternalNewsInterface(List<RssSource> sources) {
-        this.sources = sources != null ? sources : DEFAULT_SOURCES;
+        this.sources = sources != null ? sources : loadSourcesFromConfig();
+    }
+
+    private static List<RssSource> loadSourcesFromConfig() {
+        List<String[]> configSources = AppConfig.rssSources();
+        if (configSources.isEmpty()) {
+            return List.of(
+                    new RssSource("derstandard", "https://www.derstandard.at/rss", "Der Standard (AT)"),
+                    new RssSource("orf", "https://rss.orf.at/news.xml", "ORF News (AT)"),
+                    new RssSource("bbc_europe", "https://feeds.bbci.co.uk/news/world/europe/rss.xml", "BBC Europe (EN)"),
+                    new RssSource("bbc_us", "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml", "BBC US & Canada (EN)")
+            );
+        }
+        List<RssSource> result = new ArrayList<>();
+        for (String[] parts : configSources) {
+            result.add(new RssSource(parts[0].trim(), parts[1].trim(), parts[2].trim()));
+        }
+        return result;
     }
 
     @Override
@@ -49,7 +60,6 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
                 allNews.addAll(loadFromSource(source));
             } catch (Exception e) {
                 System.err.println("Failed to load from " + source.getDisplayName() + ": " + e.getMessage());
-                // Continue with other sources
             }
         }
 
@@ -57,18 +67,33 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
             throw new UserException("Could not load news from any RSS source.");
         }
 
-        // Sort by date, newest first
         allNews.sort((a, b) -> b.getPublishedAt().compareTo(a.getPublishedAt()));
         return allNews;
+    }
+
+    public List<NewsItem> loadFromSourceByName(String sourceName) {
+        for (RssSource source : sources) {
+            if (source.getDisplayName().equals(sourceName)) {
+                try {
+                    List<NewsItem> items = loadFromSource(source);
+                    items.sort((a, b) -> b.getPublishedAt().compareTo(a.getPublishedAt()));
+                    return items;
+                } catch (Exception e) {
+                    System.err.println("Failed to load from " + sourceName + ": " + e.getMessage());
+                    return new ArrayList<>();
+                }
+            }
+        }
+        return new ArrayList<>();
     }
 
     private List<NewsItem> loadFromSource(RssSource source) throws Exception {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(source.getUrl()))
-                    .timeout(java.time.Duration.ofSeconds(10))
+                    .timeout(java.time.Duration.ofSeconds(AppConfig.httpTimeoutSeconds()))
                     .GET()
-                    .header("User-Agent", "NewsFx")
+                    .header("User-Agent", AppConfig.httpUserAgent())
                     .build();
 
             HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
@@ -89,7 +114,6 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
 
     private List<NewsItem> parseRss(byte[] xmlBytes, RssSource source) throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        // Allow DOCTYPE but disable dangerous entity processing
         dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
         dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         dbf.setXIncludeAware(false);
@@ -97,8 +121,7 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
         
         try {
             dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        } catch (Exception e) {
-            // Feature not supported, continue
+        } catch (Exception ignored) {
         }
 
         Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(xmlBytes));
@@ -107,7 +130,8 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
         NodeList items = doc.getElementsByTagName("item");
         List<NewsItem> result = new ArrayList<>();
 
-        for (int i = 0; i < Math.min(items.getLength(), 50); i++) {
+        int maxItems = AppConfig.rssMaxItems();
+        for (int i = 0; i < Math.min(items.getLength(), maxItems); i++) {
             Element item = (Element) items.item(i);
 
             String title = text(item, "title");

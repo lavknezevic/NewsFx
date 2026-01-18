@@ -26,16 +26,12 @@ public class MainViewModel {
     private final FavoritesRepository favoritesRepository;
     private long currentUserId;
 
-    private final ObservableList<NewsItem> externalNews =
-            FXCollections.observableArrayList();
-
     private final ObservableList<NewsItem> internalNews =
             FXCollections.observableArrayList();
 
     private final ObservableList<NewsItem> favoritesNews =
             FXCollections.observableArrayList();
 
-    // For tab-based filtering
     private final Map<String, ObservableList<NewsItem>> externalNewsBySource = new HashMap<>();
     private final ObservableList<String> externalSources = FXCollections.observableArrayList();
 
@@ -58,10 +54,6 @@ public class MainViewModel {
         }
     }
 
-    public ObservableList<NewsItem> externalNewsProperty() {
-        return externalNews;
-    }
-
     public ObservableList<NewsItem> internalNewsProperty() {
         return internalNews;
     }
@@ -78,36 +70,14 @@ public class MainViewModel {
         this.currentUserId = userId;
     }
 
-    public void loadExternalNews() {
-        List<NewsItem> all = externalNewsInterface.loadExternalLatest();
-        externalNews.setAll(all);
-
-        // Distribute news by source
-        for (ObservableList<NewsItem> list : externalNewsBySource.values()) {
-            list.clear();
-        }
-
-        for (NewsItem item : all) {
-            String source = item.getSource();
-            externalNewsBySource.getOrDefault(source, FXCollections.observableArrayList()).add(item);
-        }
-    }
-
     public ObservableList<NewsItem> getExternalNewsBySource(String source) {
         return externalNewsBySource.getOrDefault(source, FXCollections.observableArrayList());
     }
 
-    /**
-     * Fetches internal news from persistence (does not touch JavaFX state).
-     * Use {@link #setInternalNews(List)} on the JavaFX thread to publish.
-     */
     public List<NewsItem> fetchInternalNews() {
         return internalNewsInterface.loadInternalNews();
     }
 
-    /**
-     * Publishes internal news into the observable list (must run on JavaFX thread).
-     */
     public void setInternalNews(List<NewsItem> items) {
         internalNews.setAll(items);
     }
@@ -118,20 +88,6 @@ public class MainViewModel {
                 .filter(item -> favoriteIds.contains(item.getId()))
                 .toList();
         favoritesNews.setAll(favorites);
-    }
-
-    public StringProperty titleProperty() {
-        return title;
-    }
-
-    public void addFavorite(String newsId) {
-        favoritesService.addFavorite(currentUserId, newsId);
-        loadFavorites();
-    }
-
-    public void removeFavorite(String newsId) {
-        favoritesService.removeFavorite(currentUserId, newsId);
-        loadFavorites();
     }
 
     public void toggleFavorite(String newsId) {
@@ -154,12 +110,12 @@ public class MainViewModel {
         for (int i = 0; i < internalNews.size(); i++) {
             NewsItem existing = internalNews.get(i);
             if (existing != null && existing.getId().equals(newsItem.getId())) {
+                newsItem.getComments().setAll(existing.getComments());
                 internalNews.set(i, newsItem);
                 return;
             }
         }
 
-        // Fallback: if not found locally, refresh from persistence
         setInternalNews(fetchInternalNews());
     }
 

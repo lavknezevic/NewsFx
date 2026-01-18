@@ -1,6 +1,7 @@
 package at.newsfx.fhtechnikum.newsfx.view;
 
 public enum View {
+    START("/view/StartView.fxml"),
     LOGIN("/view/LoginView.fxml"),
     REGISTER("/view/RegisterView.fxml"),
     MAIN("/view/MainView.fxml"),

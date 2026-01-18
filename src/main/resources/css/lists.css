@@ -50,6 +50,10 @@
 .news-list {
     -fx-background-color: transparent;
     -fx-padding: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-selection-bar: transparent;
+    -fx-selection-bar-non-focused: transparent;
 }
 
 /* Default ListView (non news-list) should also be dark/transparent by default. */
@@ -93,6 +97,24 @@
 
 .news-list .list-cell:filled:selected {
     -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+.news-list .list-cell:filled:selected:focused,
+.news-list .list-cell:filled:selected:hover {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.news-list:focused,
+.news-list .virtual-flow:focused,
+.news-list .virtual-flow .list-cell:focused {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
 .news-list .list-cell .headline {

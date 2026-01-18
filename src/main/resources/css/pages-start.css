@@ -1,0 +1,124 @@
+/* Start Page / Dashboard Styles */
+
+.start-page {
+    -fx-background-color: linear-gradient(to bottom, #1a1a2e, #16213e);
+}
+
+.start-content {
+    -fx-max-width: 500px;
+}
+
+/* Brand Section */
+.brand-section {
+    -fx-padding: 20 0 20 0;
+}
+
+.brand-icon {
+    -fx-font-size: 64px;
+}
+
+.brand-title {
+    -fx-font-size: 42px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.brand-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #a0a0a0;
+}
+
+/* Section Labels */
+.section-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #c0c0c0;
+    -fx-padding: 0 0 8 0;
+}
+
+/* Navigation Cards */
+.nav-cards {
+    -fx-padding: 10 0;
+}
+
+.nav-card {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-background-radius: 12;
+    -fx-padding: 24 28;
+    -fx-min-width: 180;
+    -fx-max-width: 200;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+.nav-card:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 4);
+}
+
+.nav-card-icon {
+    -fx-font-size: 36px;
+}
+
+.nav-card-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.nav-card-desc {
+    -fx-font-size: 12px;
+    -fx-text-fill: #909090;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+/* Action Buttons */
+.action-section {
+    -fx-padding: 20 0;
+}
+
+.start-button {
+    -fx-min-height: 44px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+/* Info Section */
+.info-section {
+    -fx-padding: 30 0 0 0;
+}
+
+.info-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #808080;
+    -fx-padding: 0 0 16 0;
+}
+
+.feature-icon {
+    -fx-font-size: 24px;
+}
+
+.feature-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #a0a0a0;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    -fx-background-color: rgba(26, 26, 46, 0.95);
+}
+
+.loading-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #ffffff;
+}
+
+/* Tab Loading */
+.tab-loading {
+    -fx-padding: 40 0;
+}
+
+.loading-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #a0a0a0;
+}

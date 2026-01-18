@@ -4,7 +4,7 @@ import at.newsfx.fhtechnikum.newsfx.config.AppContext;
 import at.newsfx.fhtechnikum.newsfx.model.Comment;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
-import at.newsfx.fhtechnikum.newsfx.service.news.external.ExternalNewsInterface;
+import at.newsfx.fhtechnikum.newsfx.service.reaction.ReactionService;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.RssExternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.util.error.ErrorHandler;
@@ -36,12 +36,21 @@ import javafx.scene.layout.Region;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 public class MainController extends BaseController {
+
+
+    private static String initialSection = "internal";
+
+    public static void setInitialSection(String section) {
+        initialSection = section;
+    }
 
     @FXML
     public Button createInternalNewsButton;
@@ -64,15 +73,14 @@ public class MainController extends BaseController {
     @FXML
     private Button userManagementButton;
 
-    @FXML
-    private Button logoutButton;
-
     private String selectedPdfPath;
 
     private String selectedImagePath;
     private String editingInternalNewsId;
 
     private AuthService authService;
+    private ReactionService reactionService;
+    private RssExternalNewsInterface rssService;
 
     @FXML
     private Label titleLabel;
@@ -93,21 +101,29 @@ public class MainController extends BaseController {
     private ListView<NewsItem> favoritesList;
 
     @FXML
+    private VBox internalLoadingBox;
+
+    @FXML
+    private VBox favoritesLoadingBox;
+
+    @FXML
     private TabPane externalSourceTabPane;
 
     private MainViewModel viewModel;
 
-    private FilteredList<NewsItem> filteredExternalNews;
+    private final Set<String> loadedTabs = new HashSet<>();
+    private final Map<String, VBox> tabLoadingContainers = new HashMap<>();
 
 
     @Override
     public void onViewLoaded() {
         authService = AppContext.get().authService();
+        reactionService = AppContext.get().reactionService();
 
-        ExternalNewsInterface externalNewsInterface = new RssExternalNewsInterface();
+        rssService = new RssExternalNewsInterface();
         InternalNewsInterface internalNewsInterface = AppContext.get().internalNewsService();
         viewModel = new MainViewModel(
-                externalNewsInterface,
+                rssService,
                 internalNewsInterface,
                 AppContext.get().favoritesService(),
                 AppContext.get().favoritesRepository()
@@ -118,9 +134,6 @@ public class MainController extends BaseController {
         bindInternalViewModel();
         bindExternalViewModel();
         bindFavoritesViewModel();
-
-        loadExternalNewsAsync();
-        loadInternalNewsAsync();
 
         internalNewsForm.setVisible(false);
         internalNewsForm.setManaged(false);
@@ -138,23 +151,36 @@ public class MainController extends BaseController {
         internalNewsList.setVisible(true);
         internalNewsList.setManaged(true);
 
+        switch (initialSection) {
+            case "external" -> showExternal();
+            case "favorites" -> showFavorites();
+            default -> showInternal();
+        }
+        initialSection = "internal";
     }
 
     private void bindExternalViewModel() {
         titleLabel.setText("NewsFx – External News");
         externalSourceTabPane.getTabs().clear();
+        loadedTabs.clear();
+        tabLoadingContainers.clear();
 
-        // Create tabs for each RSS source
+        // Create tabs for each RSS source with lazy loading
         viewModel.externalSourcesProperty().forEach(sourceName -> {
             Tab tab = new Tab(sourceName, createSourceTabContent(sourceName));
             tab.setClosable(false);
             externalSourceTabPane.getTabs().add(tab);
         });
 
-        // Load external news if not already loaded
-        if (viewModel.externalSourcesProperty().isEmpty()) {
-            loadExternalNewsAsync();
-        }
+        // Set up tab selection listener for lazy loading
+        externalSourceTabPane.getSelectionModel().selectedItemProperty().addListener(
+            (obs, oldTab, newTab) -> {
+                if (newTab != null) {
+                    String sourceName = newTab.getText();
+                    lazyLoadTabContent(sourceName);
+                }
+            }
+        );
     }
 
     private VBox createSourceTabContent(String sourceName) {
@@ -163,7 +189,20 @@ public class MainController extends BaseController {
         container.getStyleClass().add("external-pane");
         VBox.setVgrow(container, javafx.scene.layout.Priority.ALWAYS);
 
-        // Search and filter controls
+
+        VBox loadingBox = new VBox(12);
+        loadingBox.setAlignment(Pos.CENTER);
+        loadingBox.getStyleClass().add("tab-loading");
+        VBox.setVgrow(loadingBox, Priority.ALWAYS);
+        
+        javafx.scene.control.ProgressIndicator spinner = new javafx.scene.control.ProgressIndicator();
+        spinner.setPrefSize(40, 40);
+        Label loadingLabel = new Label("Loading " + sourceName + "...");
+        loadingLabel.getStyleClass().add("loading-label");
+        loadingBox.getChildren().addAll(spinner, loadingLabel);
+        
+        tabLoadingContainers.put(sourceName, loadingBox);
+
         HBox controlsBox = new HBox(20);
         controlsBox.setAlignment(Pos.CENTER_LEFT);
         controlsBox.getStyleClass().add("filter-card");
@@ -184,9 +223,29 @@ public class MainController extends BaseController {
         sourceCategoryCombo.getStyleClass().add("filter-combo");
         sourceCategoryCombo.setPrefWidth(190);
 
-        controlsBox.getChildren().addAll(searchLabel, sourceSearchField, categoryLabel, sourceCategoryCombo);
+        Runnable ensureValidCategorySelection = () -> Platform.runLater(() -> {
+            if (sourceCategoryCombo.getItems().isEmpty()) {
+                sourceCategoryCombo.getSelectionModel().clearSelection();
+                sourceCategoryCombo.setValue(null);
+                return;
+            }
 
-        // News list
+            String current = sourceCategoryCombo.getValue();
+            if (current != null && sourceCategoryCombo.getItems().contains(current)) {
+                return;
+            }
+
+            if (sourceCategoryCombo.getItems().contains("All")) {
+                sourceCategoryCombo.getSelectionModel().select("All");
+            } else {
+                sourceCategoryCombo.getSelectionModel().selectFirst();
+            }
+        });
+
+        controlsBox.getChildren().addAll(searchLabel, sourceSearchField, categoryLabel, sourceCategoryCombo);
+        controlsBox.setVisible(false);
+        controlsBox.setManaged(false);
+
         ListView<NewsItem> sourceNewsList = new ListView<>();
         sourceNewsList.setCellFactory(list -> new NewsItemCell());
         sourceNewsList.getStyleClass().addAll("news-list", "external-news-list");
@@ -201,13 +260,13 @@ public class MainController extends BaseController {
         listWrapper.getStyleClass().addAll("card", "news-list-wrapper");
         listWrapper.getChildren().add(sourceNewsList);
         VBox.setVgrow(listWrapper, Priority.ALWAYS);
+        listWrapper.setVisible(false);
+        listWrapper.setManaged(false);
 
-        // Create FilteredList for this source
         ObservableList<NewsItem> sourceNews = viewModel.getExternalNewsBySource(sourceName);
         FilteredList<NewsItem> filteredSourceNews = new FilteredList<>(sourceNews, item -> true);
         sourceNewsList.setItems(filteredSourceNews);
 
-        // Double-click to view article in WebView
         sourceNewsList.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 NewsItem selected = sourceNewsList.getSelectionModel().getSelectedItem();
@@ -217,7 +276,6 @@ public class MainController extends BaseController {
             }
         });
 
-        // Set up category dropdown - extract unique categories from source news
         Set<String> categories = new HashSet<>();
         categories.add("All");
         sourceNews.forEach(item -> {
@@ -226,10 +284,10 @@ public class MainController extends BaseController {
                 categories.add(category);
             }
         });
+        sourceCategoryCombo.getSelectionModel().clearSelection();
         sourceCategoryCombo.getItems().setAll(categories.stream().sorted().toList());
-        sourceCategoryCombo.getSelectionModel().select("All");
+        ensureValidCategorySelection.run();
 
-        // Listen for changes to source news and update categories
         sourceNews.addListener((javafx.collections.ListChangeListener<NewsItem>) change -> {
             Set<String> updatedCategories = new HashSet<>();
             updatedCategories.add("All");
@@ -239,13 +297,20 @@ public class MainController extends BaseController {
                     updatedCategories.add(category);
                 }
             });
+            sourceCategoryCombo.getSelectionModel().clearSelection();
             sourceCategoryCombo.getItems().setAll(updatedCategories.stream().sorted().toList());
-            if (sourceCategoryCombo.getSelectionModel().getSelectedItem() == null) {
-                sourceCategoryCombo.getSelectionModel().select("All");
+            ensureValidCategorySelection.run();
+            
+            if (!sourceNews.isEmpty()) {
+                loadingBox.setVisible(false);
+                loadingBox.setManaged(false);
+                controlsBox.setVisible(true);
+                controlsBox.setManaged(true);
+                listWrapper.setVisible(true);
+                listWrapper.setManaged(true);
             }
         });
 
-        // Set up filtering
         sourceSearchField.textProperty().addListener((obs, oldVal, newVal) -> {
             applySourceFilter(filteredSourceNews, sourceSearchField, sourceCategoryCombo);
         });
@@ -255,11 +320,57 @@ public class MainController extends BaseController {
         });
 
         container.getChildren().addAll(
+            loadingBox,
             controlsBox,
             listWrapper
         );
 
         return container;
+    }
+
+    private void lazyLoadTabContent(String sourceName) {
+        if (loadedTabs.contains(sourceName)) {
+            return;
+        }
+        loadedTabs.add(sourceName);
+
+        Task<List<NewsItem>> task = new Task<>() {
+            @Override
+            protected List<NewsItem> call() {
+                return rssService.loadFromSourceByName(sourceName);
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+            List<NewsItem> items = task.getValue();
+            Platform.runLater(() -> {
+                ObservableList<NewsItem> sourceList = viewModel.getExternalNewsBySource(sourceName);
+                sourceList.setAll(items);
+                
+                VBox loadingBox = tabLoadingContainers.get(sourceName);
+                if (loadingBox != null && items.isEmpty()) {
+                    loadingBox.setVisible(false);
+                    loadingBox.setManaged(false);
+                }
+            });
+        });
+
+        task.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                VBox loadingBox = tabLoadingContainers.get(sourceName);
+                if (loadingBox != null && loadingBox.getChildren().size() > 1) {
+                    Label label = (Label) loadingBox.getChildren().get(1);
+                    label.setText("Failed to load " + sourceName);
+                    loadingBox.getChildren().get(0).setVisible(false);
+                }
+            });
+            ErrorHandler.showTechnicalError(
+                "Failed to load " + sourceName,
+                task.getException()
+            );
+        });
+
+        new Thread(task, "RSS-" + sourceName).start();
     }
 
     private void applySourceFilter(FilteredList<NewsItem> filteredList, TextField searchField, ComboBox<String> categoryCombo) {
@@ -305,7 +416,6 @@ public class MainController extends BaseController {
 
         BorderPane layout = new BorderPane();
 
-        // Top bar with title and close button
         HBox topBar = new HBox(10);
         topBar.setStyle("-fx-background-color: #1a1a1a; -fx-padding: 10;");
         topBar.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
@@ -327,7 +437,6 @@ public class MainController extends BaseController {
         Scene scene = new Scene(layout);
         stage.setScene(scene);
 
-        // Load the URL
         engine.load(item.getArticleUrl());
         stage.show();
     }
@@ -336,7 +445,6 @@ public class MainController extends BaseController {
     private void showInternal() {
         titleLabel.setText("NewsFx – Internal News");
 
-        // Refresh from DB each time (helps multi-instance demo)
         loadInternalNewsAsync();
 
         internalView.setVisible(true);
@@ -361,6 +469,12 @@ public class MainController extends BaseController {
 
         favoritesView.setVisible(false);
         favoritesView.setManaged(false);
+
+
+        Tab selectedTab = externalSourceTabPane.getSelectionModel().getSelectedItem();
+        if (selectedTab != null) {
+            lazyLoadTabContent(selectedTab.getText());
+        }
     }
 
     @FXML
@@ -384,6 +498,7 @@ public class MainController extends BaseController {
     private void bindInternalViewModel() {
         titleLabel.setText("NewsFx – Internal News");
         internalNewsList.setItems(viewModel.internalNewsProperty());
+        internalNewsList.setFocusTraversable(false);
 
         boolean canManageInternal = authService.canManageInternalNews();
         internalNewsList.setCellFactory(list -> {
@@ -394,7 +509,8 @@ public class MainController extends BaseController {
                 this::deleteInternalNews,
                 this::toggleFavorite,
                 newsId -> viewModel.isFavorite(newsId),
-                this::onAddComment
+                this::onAddComment,
+                reactionService
         );
 
         cell.prefWidthProperty().bind(
@@ -408,6 +524,7 @@ public class MainController extends BaseController {
 
     private void bindFavoritesViewModel() {
         favoritesList.setItems(viewModel.favoritesNewsProperty());
+        favoritesList.setFocusTraversable(false);
 
         boolean canManageInternal = authService.canManageInternalNews();
         favoritesList.setCellFactory(list -> new NewsItemCell(
@@ -417,7 +534,8 @@ public class MainController extends BaseController {
             this::deleteInternalNews,
             this::toggleFavorite,
             newsId -> viewModel.isFavorite(newsId),
-            this::onAddComment
+            this::onAddComment,
+            reactionService
         ));
         favoritesList.setFixedCellSize(-1);
     }
@@ -429,26 +547,12 @@ public class MainController extends BaseController {
     }
 
 
-    private void loadExternalNewsAsync() {
-        Task<Void> task = new Task<>() {
-            @Override
-            protected Void call() {
-                viewModel.loadExternalNews();
-                return null;
-            }
-        };
-
-        task.setOnFailed(e ->
-                ErrorHandler.showTechnicalError(
-                        "Failed to load external news",
-                        task.getException()
-                )
-        );
-
-        new Thread(task).start();
-    }
-
     private void loadInternalNewsAsync() {
+        if (internalLoadingBox != null) {
+            internalLoadingBox.setVisible(true);
+            internalLoadingBox.setManaged(true);
+        }
+
         Task<List<NewsItem>> task = new Task<>() {
             @Override
             protected List<NewsItem> call() {
@@ -458,36 +562,65 @@ public class MainController extends BaseController {
 
         task.setOnSucceeded(e -> {
             List<NewsItem> items = task.getValue();
-            Platform.runLater(() -> viewModel.setInternalNews(items));
+            Platform.runLater(() -> {
+                viewModel.setInternalNews(items);
+                if (internalLoadingBox != null) {
+                    internalLoadingBox.setVisible(false);
+                    internalLoadingBox.setManaged(false);
+                }
+            });
         });
 
-        task.setOnFailed(e ->
-                ErrorHandler.showTechnicalError(
-                        "Failed to load internal news",
-                        task.getException()
-                )
-        );
+        task.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                if (internalLoadingBox != null) {
+                    internalLoadingBox.setVisible(false);
+                    internalLoadingBox.setManaged(false);
+                }
+            });
+            ErrorHandler.showTechnicalError(
+                    "Failed to load internal news",
+                    task.getException()
+            );
+        });
 
-        new Thread(task).start();
+        new Thread(task, "InternalNews").start();
     }
 
     private void loadFavoritesAsync() {
+        if (favoritesLoadingBox != null) {
+            favoritesLoadingBox.setVisible(true);
+            favoritesLoadingBox.setManaged(true);
+        }
+
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
-                Platform.runLater(() -> viewModel.loadFavorites());
+                Platform.runLater(() -> {
+                    viewModel.loadFavorites();
+                    if (favoritesLoadingBox != null) {
+                        favoritesLoadingBox.setVisible(false);
+                        favoritesLoadingBox.setManaged(false);
+                    }
+                });
                 return null;
             }
         };
 
-        task.setOnFailed(e ->
-                ErrorHandler.showTechnicalError(
-                        "Failed to load favorites",
-                        task.getException()
-                )
-        );
+        task.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                if (favoritesLoadingBox != null) {
+                    favoritesLoadingBox.setVisible(false);
+                    favoritesLoadingBox.setManaged(false);
+                }
+            });
+            ErrorHandler.showTechnicalError(
+                    "Failed to load favorites",
+                    task.getException()
+            );
+        });
 
-        new Thread(task).start();
+        new Thread(task, "Favorites").start();
     }
 
     public void onCreateInternalNews(ActionEvent actionEvent) {
@@ -726,10 +859,8 @@ public class MainController extends BaseController {
                 authService.currentUserProperty().get().getUsername()
         );
 
-        // persist
         viewModel.addCommentRuntime(comment);
 
-        // update UI state
         newsItem.addComment(comment);
     }
 

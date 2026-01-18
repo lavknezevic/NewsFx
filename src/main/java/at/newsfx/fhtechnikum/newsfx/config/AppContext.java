@@ -3,11 +3,13 @@ package at.newsfx.fhtechnikum.newsfx.config;
 import at.newsfx.fhtechnikum.newsfx.persistence.Database;
 import at.newsfx.fhtechnikum.newsfx.persistence.FavoritesRepository;
 import at.newsfx.fhtechnikum.newsfx.persistence.InternalNewsRepository;
+import at.newsfx.fhtechnikum.newsfx.persistence.ReactionRepository;
 import at.newsfx.fhtechnikum.newsfx.persistence.UserRepository;
 import at.newsfx.fhtechnikum.newsfx.security.PasswordHasher;
 import at.newsfx.fhtechnikum.newsfx.service.FavoritesService;
 import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsService;
+import at.newsfx.fhtechnikum.newsfx.service.reaction.ReactionService;
 import at.newsfx.fhtechnikum.newsfx.service.user.UserService;
 
 public final class AppContext {
@@ -17,10 +19,12 @@ public final class AppContext {
     private final UserRepository userRepository;
     private final InternalNewsRepository internalNewsRepository;
     private final FavoritesRepository favoritesRepository;
+    private final ReactionRepository reactionRepository;
     private final AuthService authService;
     private final UserService userService;
     private final InternalNewsService internalNewsService;
     private final FavoritesService favoritesService;
+    private final ReactionService reactionService;
 
     private AppContext() {
         Database.initSchema();
@@ -28,10 +32,12 @@ public final class AppContext {
         this.userRepository = new UserRepository();
         this.internalNewsRepository = new InternalNewsRepository();
         this.favoritesRepository = new FavoritesRepository();
+        this.reactionRepository = new ReactionRepository();
         this.authService = new AuthService(userRepository);
         this.userService = new UserService(userRepository, authService);
-        this.internalNewsService = new InternalNewsService(authService, internalNewsRepository);
+        this.internalNewsService = new InternalNewsService(authService, internalNewsRepository, favoritesRepository);
         this.favoritesService = new FavoritesService(favoritesRepository);
+        this.reactionService = new ReactionService(authService, reactionRepository);
 
         seedUsersIfEmpty();
     }
@@ -70,14 +76,21 @@ public final class AppContext {
         return favoritesRepository;
     }
 
+    public ReactionService reactionService() {
+        return reactionService;
+    }
+
     private void seedUsersIfEmpty() {
         if (userRepository.countUsers() > 0) {
             return;
         }
 
-        // Demo accounts for local showcase
-        userRepository.insert("admin", PasswordHasher.hash("admin"), at.newsfx.fhtechnikum.newsfx.auth.Role.ADMIN);
-        userRepository.insert("editor", PasswordHasher.hash("editor"), at.newsfx.fhtechnikum.newsfx.auth.Role.EDITOR);
-        userRepository.insert("user", PasswordHasher.hash("user"), at.newsfx.fhtechnikum.newsfx.auth.Role.USER);
+        if (!AppConfig.demoUsersEnabled()) {
+            return;
+        }
+
+        userRepository.insert(AppConfig.demoAdminUsername(), PasswordHasher.hash(AppConfig.demoAdminPassword()), at.newsfx.fhtechnikum.newsfx.auth.Role.ADMIN);
+        userRepository.insert(AppConfig.demoEditorUsername(), PasswordHasher.hash(AppConfig.demoEditorPassword()), at.newsfx.fhtechnikum.newsfx.auth.Role.EDITOR);
+        userRepository.insert(AppConfig.demoUserUsername(), PasswordHasher.hash(AppConfig.demoUserPassword()), at.newsfx.fhtechnikum.newsfx.auth.Role.USER);
     }
 }
