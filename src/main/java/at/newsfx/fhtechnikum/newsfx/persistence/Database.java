@@ -93,6 +93,16 @@ public final class Database {
             """);
 
             st.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS user_favorites (
+                    user_id BIGINT NOT NULL,
+                    news_id VARCHAR(64) NOT NULL,
+                    PRIMARY KEY (user_id, news_id),
+                    CONSTRAINT fk_user_favorites_user_id FOREIGN KEY (user_id) REFERENCES users(id),
+                    CONSTRAINT fk_user_favorites_news_id FOREIGN KEY (news_id) REFERENCES internal_news(id)
+                )
+            """);
+
+            st.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS comments (
                         id VARCHAR(64) PRIMARY KEY,
                         news_id VARCHAR(64) NOT NULL,
