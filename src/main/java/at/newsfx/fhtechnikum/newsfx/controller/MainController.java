@@ -4,6 +4,7 @@ import at.newsfx.fhtechnikum.newsfx.config.AppContext;
 import at.newsfx.fhtechnikum.newsfx.model.Comment;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
+import at.newsfx.fhtechnikum.newsfx.service.reaction.ReactionService;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.ExternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.RssExternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsInterface;
@@ -73,6 +74,7 @@ public class MainController extends BaseController {
     private String editingInternalNewsId;
 
     private AuthService authService;
+    private ReactionService reactionService;
 
     @FXML
     private Label titleLabel;
@@ -103,6 +105,7 @@ public class MainController extends BaseController {
     @Override
     public void onViewLoaded() {
         authService = AppContext.get().authService();
+        reactionService = AppContext.get().reactionService();
 
         ExternalNewsInterface externalNewsInterface = new RssExternalNewsInterface();
         InternalNewsInterface internalNewsInterface = AppContext.get().internalNewsService();
@@ -184,10 +187,30 @@ public class MainController extends BaseController {
         sourceCategoryCombo.getStyleClass().add("filter-combo");
         sourceCategoryCombo.setPrefWidth(190);
 
+        Runnable ensureValidCategorySelection = () -> Platform.runLater(() -> {
+            if (sourceCategoryCombo.getItems().isEmpty()) {
+                sourceCategoryCombo.getSelectionModel().clearSelection();
+                sourceCategoryCombo.setValue(null);
+                return;
+            }
+
+            String current = sourceCategoryCombo.getValue();
+            if (current != null && sourceCategoryCombo.getItems().contains(current)) {
+                return;
+            }
+
+            if (sourceCategoryCombo.getItems().contains("All")) {
+                sourceCategoryCombo.getSelectionModel().select("All");
+            } else {
+                sourceCategoryCombo.getSelectionModel().selectFirst();
+            }
+        });
+
         controlsBox.getChildren().addAll(searchLabel, sourceSearchField, categoryLabel, sourceCategoryCombo);
 
         // News list
         ListView<NewsItem> sourceNewsList = new ListView<>();
+        // External RSS: no DB-backed reactions (performance)
         sourceNewsList.setCellFactory(list -> new NewsItemCell());
         sourceNewsList.getStyleClass().addAll("news-list", "external-news-list");
         sourceNewsList.setFocusTraversable(false);
@@ -226,8 +249,9 @@ public class MainController extends BaseController {
                 categories.add(category);
             }
         });
+        sourceCategoryCombo.getSelectionModel().clearSelection();
         sourceCategoryCombo.getItems().setAll(categories.stream().sorted().toList());
-        sourceCategoryCombo.getSelectionModel().select("All");
+        ensureValidCategorySelection.run();
 
         // Listen for changes to source news and update categories
         sourceNews.addListener((javafx.collections.ListChangeListener<NewsItem>) change -> {
@@ -239,10 +263,9 @@ public class MainController extends BaseController {
                     updatedCategories.add(category);
                 }
             });
+            sourceCategoryCombo.getSelectionModel().clearSelection();
             sourceCategoryCombo.getItems().setAll(updatedCategories.stream().sorted().toList());
-            if (sourceCategoryCombo.getSelectionModel().getSelectedItem() == null) {
-                sourceCategoryCombo.getSelectionModel().select("All");
-            }
+            ensureValidCategorySelection.run();
         });
 
         // Set up filtering
@@ -384,6 +407,7 @@ public class MainController extends BaseController {
     private void bindInternalViewModel() {
         titleLabel.setText("NewsFx – Internal News");
         internalNewsList.setItems(viewModel.internalNewsProperty());
+        internalNewsList.setFocusTraversable(false);
 
         boolean canManageInternal = authService.canManageInternalNews();
         internalNewsList.setCellFactory(list -> {
@@ -394,7 +418,8 @@ public class MainController extends BaseController {
                 this::deleteInternalNews,
                 this::toggleFavorite,
                 newsId -> viewModel.isFavorite(newsId),
-                this::onAddComment
+                this::onAddComment,
+                reactionService
         );
 
         cell.prefWidthProperty().bind(
@@ -408,6 +433,7 @@ public class MainController extends BaseController {
 
     private void bindFavoritesViewModel() {
         favoritesList.setItems(viewModel.favoritesNewsProperty());
+        favoritesList.setFocusTraversable(false);
 
         boolean canManageInternal = authService.canManageInternalNews();
         favoritesList.setCellFactory(list -> new NewsItemCell(
@@ -417,7 +443,8 @@ public class MainController extends BaseController {
             this::deleteInternalNews,
             this::toggleFavorite,
             newsId -> viewModel.isFavorite(newsId),
-            this::onAddComment
+            this::onAddComment,
+            reactionService
         ));
         favoritesList.setFixedCellSize(-1);
     }
@@ -430,13 +457,17 @@ public class MainController extends BaseController {
 
 
     private void loadExternalNewsAsync() {
-        Task<Void> task = new Task<>() {
+        Task<List<NewsItem>> task = new Task<>() {
             @Override
-            protected Void call() {
-                viewModel.loadExternalNews();
-                return null;
+            protected List<NewsItem> call() {
+                return viewModel.fetchExternalNews();
             }
         };
+
+        task.setOnSucceeded(e -> {
+            List<NewsItem> items = task.getValue();
+            Platform.runLater(() -> viewModel.setExternalNews(items));
+        });
 
         task.setOnFailed(e ->
                 ErrorHandler.showTechnicalError(

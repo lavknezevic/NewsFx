@@ -78,8 +78,18 @@ public class MainViewModel {
         this.currentUserId = userId;
     }
 
-    public void loadExternalNews() {
-        List<NewsItem> all = externalNewsInterface.loadExternalLatest();
+    /**
+     * Fetches external news (does not touch JavaFX state).
+     * Use {@link #setExternalNews(List)} on the JavaFX thread to publish.
+     */
+    public List<NewsItem> fetchExternalNews() {
+        return externalNewsInterface.loadExternalLatest();
+    }
+
+    /**
+     * Publishes external news into observable lists (must run on JavaFX thread).
+     */
+    public void setExternalNews(List<NewsItem> all) {
         externalNews.setAll(all);
 
         // Distribute news by source
@@ -89,7 +99,10 @@ public class MainViewModel {
 
         for (NewsItem item : all) {
             String source = item.getSource();
-            externalNewsBySource.getOrDefault(source, FXCollections.observableArrayList()).add(item);
+            ObservableList<NewsItem> bucket = externalNewsBySource.get(source);
+            if (bucket != null) {
+                bucket.add(item);
+            }
         }
     }
 

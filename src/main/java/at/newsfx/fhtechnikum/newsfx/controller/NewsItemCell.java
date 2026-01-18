@@ -2,6 +2,8 @@ package at.newsfx.fhtechnikum.newsfx.controller;
 
 import at.newsfx.fhtechnikum.newsfx.model.Comment;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
+import at.newsfx.fhtechnikum.newsfx.service.reaction.ReactionService;
+import at.newsfx.fhtechnikum.newsfx.service.reaction.ReactionTargetType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -19,18 +21,22 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 
 import java.awt.*;
 import java.io.File;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class NewsItemCell extends ListCell<NewsItem> {
+
+    private static final String[] DEFAULT_EMOJIS = new String[]{"👍", "❤️", "😂", "😮", "😢"};
 
     private final boolean enableInternalActions;
     private final boolean enableFavorites;
@@ -41,9 +47,14 @@ public class NewsItemCell extends ListCell<NewsItem> {
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
     private final Consumer<NewsItem> onFavoriteToggle;
     private final Predicate<String> isFavorited;
+    private final ReactionService reactionService;
 
     public NewsItemCell() {
-        this(false, false, null, null, null, null, null);
+        this(false, false, null, null, null, null, null, null);
+    }
+
+    public NewsItemCell(ReactionService reactionService) {
+        this(false, false, null, null, null, null, null, reactionService);
     }
 
     public NewsItemCell(boolean enableInternalActions, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete) {
@@ -55,10 +66,14 @@ public class NewsItemCell extends ListCell<NewsItem> {
     }
 
     public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle, Predicate<String> isFavorited) {
-        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, isFavorited, null);
+        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, isFavorited, null, null);
     }
 
     public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle, Predicate<String> isFavorited, BiConsumer<NewsItem, String> onAddComment) {
+        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, isFavorited, onAddComment, null);
+    }
+
+    public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle, Predicate<String> isFavorited, BiConsumer<NewsItem, String> onAddComment, ReactionService reactionService) {
         this.enableInternalActions = enableInternalActions;
         this.enableFavorites = enableFavorites;
         this.onEdit = onEdit;
@@ -66,6 +81,7 @@ public class NewsItemCell extends ListCell<NewsItem> {
         this.onAddComment = onAddComment;
         this.onFavoriteToggle = onFavoriteToggle;
         this.isFavorited = isFavorited;
+        this.reactionService = reactionService;
     }
 
     @Override
@@ -116,6 +132,11 @@ public class NewsItemCell extends ListCell<NewsItem> {
         }
 
         box.getChildren().add(summary);
+
+        // Reactions below each post (internal only)
+        if (!item.isExternal() && reactionService != null) {
+            box.getChildren().add(createReactionsBar(ReactionTargetType.NEWS, item.getId()));
+        }
 
         String articleUrl = item.getArticleUrl() != null && !item.getArticleUrl().isBlank()
                 ? item.getArticleUrl()
@@ -244,6 +265,11 @@ public class NewsItemCell extends ListCell<NewsItem> {
                 VBox box = new VBox(4, meta, text);
                 box.getStyleClass().add("comment-item");
 
+                // Reactions below each comment
+                if (reactionService != null) {
+                    box.getChildren().add(createReactionsBar(ReactionTargetType.COMMENT, comment.getId()));
+                }
+
                 setGraphic(box);
                 setText(null);
             }
@@ -275,6 +301,132 @@ public class NewsItemCell extends ListCell<NewsItem> {
 
         section.getChildren().addAll(title, commentsList, input);
         return section;
+    }
+
+    private HBox createReactionsBar(ReactionTargetType targetType, String targetId) {
+        HBox bar = new HBox(6);
+        bar.getStyleClass().add("reactions-bar");
+
+        if (reactionService == null || targetId == null || targetId.isBlank()) {
+            return bar;
+        }
+
+        ReactionService.ReactionSummary summary = reactionService.getSummaryForCurrentUser(targetType, targetId);
+        Map<String, Integer> counts = summary.countsByEmoji();
+
+        for (String emoji : DEFAULT_EMOJIS) {
+            int count = counts.getOrDefault(emoji, 0);
+
+            HBox chip = new HBox(6);
+            chip.getStyleClass().add("reaction-chip");
+
+            Button button = new Button();
+            button.setUserData(emoji);
+            button.getStyleClass().add("reaction-button");
+            button.setFocusTraversable(false);
+
+            String emojiClass = switch (emoji) {
+                case "👍" -> "reaction-like";
+                case "❤️" -> "reaction-love";
+                case "😂" -> "reaction-laugh";
+                case "😮" -> "reaction-wow";
+                case "😢" -> "reaction-sad";
+                default -> null;
+            };
+            if (emojiClass != null) {
+                button.getStyleClass().add(emojiClass);
+            }
+
+            if (summary.reactedEmojis().contains(emoji)) {
+                button.getStyleClass().add("reacted");
+            }
+
+            Node emojiNode = createEmojiNode(emoji);
+            button.setGraphic(emojiNode);
+
+            boolean show = count > 0;
+            Label countLabel = new Label(show ? String.valueOf(count) : "");
+            countLabel.getStyleClass().add("reaction-count");
+            countLabel.setManaged(show);
+            countLabel.setVisible(show);
+
+            button.getProperties().put("countLabel", countLabel);
+
+            button.setOnAction(e -> {
+                reactionService.toggle(targetType, targetId, emoji);
+                refreshReactionBar(bar, targetType, targetId);
+            });
+
+            chip.getChildren().addAll(button, countLabel);
+            bar.getChildren().add(chip);
+        }
+
+        return bar;
+    }
+
+    private void refreshReactionBar(HBox bar, ReactionTargetType targetType, String targetId) {
+        if (reactionService == null) {
+            return;
+        }
+
+        ReactionService.ReactionSummary summary = reactionService.getSummaryForCurrentUser(targetType, targetId);
+        Map<String, Integer> counts = summary.countsByEmoji();
+        for (javafx.scene.Node node : bar.getChildren()) {
+            if (node instanceof HBox chip) {
+                for (javafx.scene.Node child : chip.getChildren()) {
+                    if (child instanceof Button btn) {
+                        Object data = btn.getUserData();
+                        if (data instanceof String emoji) {
+                            int count = counts.getOrDefault(emoji, 0);
+
+                            btn.getStyleClass().remove("reacted");
+                            if (summary.reactedEmojis().contains(emoji)) {
+                                btn.getStyleClass().add("reacted");
+                            }
+
+                            Object labelObj = btn.getProperties().get("countLabel");
+                            if (labelObj instanceof Label countLabel) {
+                                boolean show = count > 0;
+                                countLabel.setText(show ? String.valueOf(count) : "");
+                                countLabel.setManaged(show);
+                                countLabel.setVisible(show);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private Node createEmojiNode(String emoji) {
+        String resourcePath = switch (emoji) {
+            case "👍" -> "/icons/reactions/like.png";
+            case "❤️" -> "/icons/reactions/love.png";
+            case "😂" -> "/icons/reactions/laugh.png";
+            case "😮" -> "/icons/reactions/wow.png";
+            case "😢" -> "/icons/reactions/sad.png";
+            default -> null;
+        };
+
+        if (resourcePath != null) {
+            try (var stream = getClass().getResourceAsStream(resourcePath)) {
+                if (stream != null) {
+                    Image image = new Image(stream);
+                    ImageView view = new ImageView(image);
+                    view.setFitWidth(16);
+                    view.setFitHeight(16);
+                    view.setPreserveRatio(true);
+                    view.getStyleClass().add("reaction-icon");
+                    return view;
+                }
+            } catch (Exception ignored) {
+                // fallback to text emoji
+            }
+        }
+
+        Label emojiLabel = new Label(emoji);
+        emojiLabel.getStyleClass().add("reaction-emoji");
+        return emojiLabel;
     }
 
 

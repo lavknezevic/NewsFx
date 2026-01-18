@@ -122,6 +122,18 @@ public final class Database {
                     )
             """);
 
+            st.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS reactions (
+                    target_type VARCHAR(16) NOT NULL,
+                    target_id VARCHAR(64) NOT NULL,
+                    emoji VARCHAR(32) NOT NULL,
+                    user_id BIGINT NOT NULL,
+                    created_at TIMESTAMP NOT NULL,
+                    PRIMARY KEY (target_type, target_id, emoji, user_id),
+                    CONSTRAINT fk_reactions_user_id FOREIGN KEY (user_id) REFERENCES users(id)
+                )
+            """);
+
         } catch (SQLException e) {
             throw new TechnicalException("Failed to initialize database schema", e);
         }
