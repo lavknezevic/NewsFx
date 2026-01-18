@@ -34,7 +34,7 @@ public class LoginController extends BaseController {
                     passwordField.getText()
             );
 
-            ViewManager.setRoot(usernameField.getScene(), View.MAIN);
+            ViewManager.setRoot(usernameField.getScene(), View.START);
         } catch (UserException e) {
             statusLabel.setText(e.getMessage());
         } catch (Exception e) {

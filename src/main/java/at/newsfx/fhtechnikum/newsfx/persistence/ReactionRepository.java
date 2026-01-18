@@ -91,10 +91,7 @@ public class ReactionRepository {
         }
     }
 
-    /**
-     * Returns counts and whether the given user has reacted with each emoji.
-     * This is optimized for UI rendering.
-     */
+
     public ReactionSummary getSummary(ReactionTargetType targetType, String targetId, long userId) {
         String sql = """
             SELECT emoji,

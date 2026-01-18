@@ -11,7 +11,6 @@ import java.sql.Statement;
 public final class Database {
 
     private Database() {
-        // utility
     }
 
     public static Connection getConnection() {
@@ -28,7 +27,6 @@ public final class Database {
     }
 
     private static void ensureDbDirectoryExists() {
-        // For jdbc:h2:file:./newsfx-db/newsfx;AUTO_SERVER=TRUE ensure ./newsfx-db exists.
         String url = AppConfig.dbUrl();
         if (url == null) {
             return;

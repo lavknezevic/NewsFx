@@ -8,21 +8,25 @@ Zusätzlich gibt es ein einfaches Login/Registrierungs-Feature inkl. Rollen (USE
 - **External News (RSS)**: Lädt aktuelle Einträge aus einem konfigurierbaren RSS-Feed und zeigt Artikel per **WebView**.
 - **Suche & Filter**: Suche im Titel, einfache Kategorieauswahl.
 - **Internal News**: Erstellen/Bearbeiten/Löschen inkl. optionalem Link, Bild und PDF-Anhang (lokale Dateien).
+  - **with Comments**
+  - **with Reactions**
+  - **with favorization**
 - **Login/Register/Logout**: Accounts lokal in einer DB, Passwörter werden gehasht.
 - **User Management (Admin)**: Rollen für User verwalten.
-- **(Modernes UI) xD**: JavaFX + FXML + CSS.
 
 ## Demo Accounts
 
-Beim ersten Start (leere DB) werden Demo-User angelegt:
+Beim ersten Start (leere DB) werden Demo-User angelegt (konfigurierbar in `application.properties`):
 
 - `admin` / `admin`
 - `editor` / `editor`
 - `user` / `user`
 
+Demo-User können deaktiviert werden via `demo.users.enabled=false`.
+
 ## Voraussetzungen
 
-- **Java 21** (gemäß `pom.xml`)
+- **Java 21**
 - Internetzugang für RSS-Feed (Default: ORF RSS)
 
 Optional:
@@ -56,20 +60,56 @@ Hinweis: Die Main-Klasse ist in Maven bereits konfiguriert (JavaFX Maven Plugin)
 
 Die App liest ihre Konfiguration aus [src/main/resources/application.properties](src/main/resources/application.properties).
 
-Wichtige Keys:
+### App & UI
 
-- `app.name`: Anzeigename
-- `ui.window.title`: Fenstertitel
-- `news.rss.feedUrl`: RSS Feed URL (Default: `https://rss.orf.at/news.xml`)
-- `news.http.timeoutSeconds`: HTTP Timeout in Sekunden
+| Key | Beschreibung | Default |
+|-----|--------------|---------|
+| `app.name` | Anzeigename | `NewsFx` |
+| `ui.window.title` | Fenstertitel | `NewsFx` |
+| `ui.window.width` | Fensterbreite | `1000` |
+| `ui.window.height` | Fensterhöhe | `700` |
+| `ui.window.minWidth` | Minimale Breite | `900` |
+| `ui.window.minHeight` | Minimale Höhe | `600` |
 
-Local DB:
+### News & RSS
 
-- `db.url`: z.B. `jdbc:h2:file:./newsfx-db/newsfx;AUTO_SERVER=TRUE`
-- `db.user`: Default `sa`
-- `db.password`: Default leer
+| Key | Beschreibung | Default |
+|-----|--------------|---------|
+| `news.http.timeoutSeconds` | HTTP Timeout | `10` |
+| `news.http.userAgent` | User-Agent Header | `NewsFx` |
+| `news.rss.sources` | RSS-Quellen (Format: `name\|url\|displayName,...`) | 4 vorkonfigurierte Quellen |
+| `news.rss.maxItems` | Max. Einträge pro Feed | `50` |
+| `news.summary.maxLength` | Max. Länge der Summary | `180` |
+| `news.image.fitWidth` | Bildbreite in News-Cards | `420` |
+| `news.defaultCategory` | Standard-Kategorie | `General` |
 
-Wenn ein Key fehlt oder leer ist, bricht die App beim Start mit einer technischen Exception ab.
+### Sicherheit
+
+| Key | Beschreibung | Default |
+|-----|--------------|---------|
+| `security.password.iterations` | PBKDF2 Iterationen | `600000` |
+| `security.password.keyLengthBits` | Key-Länge in Bits | `256` |
+| `security.password.saltBytes` | Salt-Länge in Bytes | `16` |
+
+### Demo-User
+
+| Key | Beschreibung | Default |
+|-----|--------------|---------|
+| `demo.users.enabled` | Demo-User anlegen | `true` |
+| `demo.users.admin.username` | Admin Username | `admin` |
+| `demo.users.admin.password` | Admin Passwort | `admin` |
+| `demo.users.editor.username` | Editor Username | `editor` |
+| `demo.users.editor.password` | Editor Passwort | `editor` |
+| `demo.users.user.username` | User Username | `user` |
+| `demo.users.user.password` | User Passwort | `user` |
+
+### Datenbank
+
+| Key | Beschreibung | Default |
+|-----|--------------|---------|
+| `db.url` | JDBC URL | `jdbc:h2:file:./newsfx-db/newsfx;AUTO_SERVER=TRUE` |
+| `db.user` | DB User | `sa` |
+| `db.password` | DB Passwort | (leer) |
 
 ## Bedienung
 
@@ -110,6 +150,6 @@ Wenn ein Key fehlt oder leer ist, bricht die App beim Start mit einer technische
 ## Troubleshooting
 
 - **Java-Version**: Prüfe `java -version` (muss Java 21 sein) + JavaFx Library (in unserem Fall Zulu).
-- **JavaFX / Module**: Das Projekt nutzt `module-info.java`. Falls du Module änderst, stelle sicher, dass benötigte `requires`/`opens` korrekt sind.
-- **Kein RSS**: Prüfe `news.rss.feedUrl`, Proxy/Firewall und Internetverbindung.
+- **JavaFX / Module**: Das Projekt nutzt `module-info.java`. Falls man Module ändert, sicherstellen, dass benötigte `requires`/`opens` korrekt sind.
+- **Kein RSS**: Prüfe `news.rss.sources` in der Konfiguration, Proxy/Firewall und Internetverbindung.
 - **DB locked**: Stelle sicher, dass keine zweite Instanz läuft; ggf. `*.lock.db`/`*.trace.db` löschen.

@@ -4,6 +4,22 @@
     -fx-background-color: transparent;
 }
 
+/* ===== Loading Indicators ===== */
+.tab-loading,
+.loading-box {
+    -fx-padding: 40 20;
+    -fx-alignment: center;
+}
+
+.loading-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #808080;
+}
+
+.progress-indicator {
+    -fx-progress-color: #4a90d9;
+}
+
 /* ===== Scrollbars ===== */
 .scroll-bar:horizontal,
 .scroll-bar:vertical {

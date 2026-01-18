@@ -5,7 +5,6 @@ import javafx.scene.control.Alert;
 public final class ErrorHandler {
 
     private ErrorHandler() {
-        // utility
     }
 
     public static void showUserError(String message) {
@@ -21,10 +20,7 @@ public final class ErrorHandler {
         alert.setTitle("Unexpected Error");
         alert.setHeaderText("Something went wrong");
         alert.setContentText(message);
-
-        // todo: logging
         t.printStackTrace();
-
         alert.showAndWait();
     }
 }

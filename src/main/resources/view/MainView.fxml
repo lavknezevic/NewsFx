@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
@@ -108,6 +109,12 @@
                 <center>
                     <VBox spacing="18" styleClass="internal-content">
 
+                        <!-- Loading indicator for internal news -->
+                        <VBox fx:id="internalLoadingBox" alignment="CENTER" spacing="12" visible="false" managed="false">
+                            <ProgressIndicator prefWidth="40" prefHeight="40"/>
+                            <Label text="Loading internal news..." styleClass="loading-label"/>
+                        </VBox>
+
                         <!-- Form -->
                         <VBox fx:id="internalNewsForm"
                               spacing="10"
@@ -178,6 +185,12 @@
                         <Label text="Your bookmarked articles" styleClass="screen-subtitle"/>
                     </VBox>
                 </HBox>
+
+                <!-- Loading indicator for favorites -->
+                <VBox fx:id="favoritesLoadingBox" alignment="CENTER" spacing="12" visible="false" managed="false">
+                    <ProgressIndicator prefWidth="40" prefHeight="40"/>
+                    <Label text="Loading favorites..." styleClass="loading-label"/>
+                </VBox>
 
                 <StackPane VBox.vgrow="ALWAYS" styleClass="card">
                     <ListView fx:id="favoritesList" styleClass="news-list" />

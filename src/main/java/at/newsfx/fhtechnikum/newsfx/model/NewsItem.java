@@ -1,5 +1,6 @@
 package at.newsfx.fhtechnikum.newsfx.model;
 
+import at.newsfx.fhtechnikum.newsfx.config.AppConfig;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -64,7 +65,7 @@ public class NewsItem {
         this.pdfPath = pdfPath;
         this.external = external;
         this.articleUrl = articleUrl;
-        this.category = category != null ? category : "General";
+        this.category = category != null ? category : AppConfig.defaultCategory();
     }
 
     public String getId() {

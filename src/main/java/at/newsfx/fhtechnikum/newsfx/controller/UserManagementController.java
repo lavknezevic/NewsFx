@@ -56,7 +56,7 @@ public class UserManagementController extends BaseController {
                     return;
                 }
 
-                // Username with icon/indicator
+
                 Label name = new Label(item.getUsername());
                 name.getStyleClass().add("user-name");
                 
@@ -74,7 +74,6 @@ public class UserManagementController extends BaseController {
                 roleBox.getStyleClass().add("role-combo");
                 roleBox.setPrefWidth(140);
 
-                // Keep it simple: allow Admin to toggle USER <-> EDITOR, but keep ADMIN fixed.
                 if (item.getRole() == Role.ADMIN) {
                     roleBox.setDisable(true);
                 }
@@ -97,7 +96,7 @@ public class UserManagementController extends BaseController {
                         statusLabel.getStyleClass().removeAll("status-success", "status-error");
                         statusLabel.getStyleClass().add("status-success");
 
-                        // Update list item model
+
                         int idx = getIndex();
                         if (idx >= 0) {
                             usersList.getItems().set(idx, item.withRole(newRole));
