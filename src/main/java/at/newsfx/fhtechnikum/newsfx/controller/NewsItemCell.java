@@ -51,7 +51,11 @@ public class NewsItemCell extends ListCell<NewsItem> {
     }
 
     public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle) {
-        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, null);
+        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, (Predicate<String>) null);
+    }
+
+    public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle, Predicate<String> isFavorited) {
+        this(enableInternalActions, enableFavorites, onEdit, onDelete, onFavoriteToggle, isFavorited, null);
     }
 
     public NewsItemCell(boolean enableInternalActions, boolean enableFavorites, Consumer<NewsItem> onEdit, Consumer<NewsItem> onDelete, Consumer<NewsItem> onFavoriteToggle, Predicate<String> isFavorited, BiConsumer<NewsItem, String> onAddComment) {
@@ -130,6 +134,11 @@ public class NewsItemCell extends ListCell<NewsItem> {
             box.getChildren().add(pdfButton);
         }
 
+        // Comments are available for internal news for all roles
+        if (!item.isExternal()) {
+            box.getChildren().add(createCommentsSection(item));
+        }
+
     HBox actions = new HBox(10);
     actions.getStyleClass().add("news-card-actions");
     actions.setAlignment(Pos.CENTER_RIGHT);
@@ -165,10 +174,6 @@ public class NewsItemCell extends ListCell<NewsItem> {
                     onDelete.accept(item);
                 }
             });
-
-            if (!item.isExternal()) {
-                box.getChildren().add(createCommentsSection(item));
-            }
 
             actions.getChildren().addAll(editButton, deleteButton);
         }
@@ -248,6 +253,11 @@ public class NewsItemCell extends ListCell<NewsItem> {
         commentField.setPromptText("Write a comment...");
 
         Button addButton = new Button("Add");
+
+        // Allow read-only comments rendering in contexts where adding isn't wired.
+        boolean canAdd = onAddComment != null;
+        commentField.setDisable(!canAdd);
+        addButton.setDisable(!canAdd);
 
         addButton.setOnAction(e -> {
             String text = commentField.getText();

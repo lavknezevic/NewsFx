@@ -97,8 +97,19 @@ public class MainViewModel {
         return externalNewsBySource.getOrDefault(source, FXCollections.observableArrayList());
     }
 
-    public List<NewsItem> loadInternalNews() {
+    /**
+     * Fetches internal news from persistence (does not touch JavaFX state).
+     * Use {@link #setInternalNews(List)} on the JavaFX thread to publish.
+     */
+    public List<NewsItem> fetchInternalNews() {
         return internalNewsInterface.loadInternalNews();
+    }
+
+    /**
+     * Publishes internal news into the observable list (must run on JavaFX thread).
+     */
+    public void setInternalNews(List<NewsItem> items) {
+        internalNews.setAll(items);
     }
 
     public void loadFavorites() {
@@ -149,7 +160,7 @@ public class MainViewModel {
         }
 
         // Fallback: if not found locally, refresh from persistence
-        loadInternalNews();
+        setInternalNews(fetchInternalNews());
     }
 
     public void deleteInternalNewsRuntime(String id) {

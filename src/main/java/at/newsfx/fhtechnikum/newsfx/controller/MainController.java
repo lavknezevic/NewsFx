@@ -393,8 +393,8 @@ public class MainController extends BaseController {
                 this::startEditInternalNews,
                 this::deleteInternalNews,
                 this::toggleFavorite,
-                this::onAddComment,
-                newsId -> viewModel.isFavorite(newsId)
+                newsId -> viewModel.isFavorite(newsId),
+                this::onAddComment
         );
 
         cell.prefWidthProperty().bind(
@@ -411,12 +411,13 @@ public class MainController extends BaseController {
 
         boolean canManageInternal = authService.canManageInternalNews();
         favoritesList.setCellFactory(list -> new NewsItemCell(
-                canManageInternal,
-                true,
-                this::startEditInternalNews,
-                this::deleteInternalNews,
-                this::toggleFavorite,
-                newsId -> viewModel.isFavorite(newsId)
+            canManageInternal,
+            true,
+            this::startEditInternalNews,
+            this::deleteInternalNews,
+            this::toggleFavorite,
+            newsId -> viewModel.isFavorite(newsId),
+            this::onAddComment
         ));
         favoritesList.setFixedCellSize(-1);
     }
@@ -448,14 +449,17 @@ public class MainController extends BaseController {
     }
 
     private void loadInternalNewsAsync() {
-        Task<Void> task = new Task<>() {
-
-        @Override
-            protected Void call() {
-                Platform.runLater(() -> viewModel.loadInternalNews());
-                return null;
+        Task<List<NewsItem>> task = new Task<>() {
+            @Override
+            protected List<NewsItem> call() {
+                return viewModel.fetchInternalNews();
             }
         };
+
+        task.setOnSucceeded(e -> {
+            List<NewsItem> items = task.getValue();
+            Platform.runLater(() -> viewModel.setInternalNews(items));
+        });
 
         task.setOnFailed(e ->
                 ErrorHandler.showTechnicalError(
