@@ -356,6 +356,18 @@
     -fx-text-fill: -fx-muted;
 }
 
+.internal-news-list .list-cell {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
+.internal-news-list .list-cell:filled {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+}
+
 .hyperlink {
     -fx-text-fill: -fx-accent;
     -fx-border-color: transparent;
@@ -423,3 +435,74 @@
     -fx-font-weight: 800;
     -fx-text-fill: -fx-text;
 }
+
+.comments-section {
+    /* gleiche Surface wie Cards */
+    -fx-background-color: -fx-surface-2;
+    -fx-background-radius: 16;
+
+    /* konsistente Border */
+    -fx-border-color: -fx-border;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+
+    /* Card-typisches Padding */
+    -fx-padding: 14;
+
+    /* dezenter Shadow wie Card, aber schwächer */
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.35),
+            18,
+            0.15,
+            0,
+            6
+    );
+}
+
+.comment-item {
+    -fx-padding: 10 12;
+    -fx-margin-bottom: 10;
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-radius: 12;
+}
+
+
+.comment-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -fx-muted;
+    -fx-padding: 0 0 4 2;
+}
+
+.comments-section .list-view {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-control-inner-background: transparent;
+    -fx-padding: 4 0 4 0;
+    -fx-margin-bottom: 10;
+}
+
+.comments-section .list-cell {
+    -fx-background-insets: 0 0 10 0;
+    -fx-background-color: transparent;
+}
+
+.comments-section .list-cell:filled:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+}
+
+.comments-section .list-cell:filled:selected {
+    -fx-background-color: rgba(79, 124, 255, 0.22);
+    -fx-border-color: rgba(79, 124, 255, 0.45);
+}
+
+.comment-meta {
+    -fx-font-size: 11px;
+    -fx-text-fill: -fx-muted;
+}
+
+.comments-section .label {
+    -fx-text-fill: -fx-text;
+}
+

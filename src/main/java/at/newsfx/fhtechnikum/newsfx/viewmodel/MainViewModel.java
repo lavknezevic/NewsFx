@@ -1,5 +1,6 @@
 package at.newsfx.fhtechnikum.newsfx.viewmodel;
 
+import at.newsfx.fhtechnikum.newsfx.model.Comment;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.ExternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsInterface;
@@ -7,6 +8,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.util.List;
 
 public class MainViewModel {
 
@@ -38,8 +41,8 @@ public class MainViewModel {
         externalNews.setAll(externalNewsInterface.loadExternalLatest());
     }
 
-    public void loadInternalNews() {
-        internalNews.setAll(internalNewsInterface.loadInternalNews());
+    public List<NewsItem> loadInternalNews() {
+        return internalNewsInterface.loadInternalNews();
     }
 
     public StringProperty titleProperty() {
@@ -70,4 +73,10 @@ public class MainViewModel {
         internalNewsInterface.deleteInternalNews(id);
         internalNews.removeIf(item -> item != null && id.equals(item.getId()));
     }
+
+    public void addCommentRuntime(Comment comment) {
+        internalNewsInterface.addComment(comment);
+    }
+
+
 }

@@ -1,6 +1,7 @@
 package at.newsfx.fhtechnikum.newsfx.controller;
 
 import at.newsfx.fhtechnikum.newsfx.config.AppContext;
+import at.newsfx.fhtechnikum.newsfx.model.Comment;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.ExternalNewsInterface;
@@ -98,6 +99,7 @@ public class MainController extends BaseController {
 
     private FilteredList<NewsItem> filteredExternalNews;
 
+
     @Override
     public void onViewLoaded() {
         authService = AppContext.get().authService();
@@ -127,6 +129,7 @@ public class MainController extends BaseController {
 
         internalNewsList.setVisible(true);
         internalNewsList.setManaged(true);
+
     }
 
     private void bindExternalViewModel() {
@@ -157,6 +160,8 @@ public class MainController extends BaseController {
 
         applyExternalFilter();
     }
+
+
 
     private void applyExternalFilter() {
         String search = externalSearchField.getText();
@@ -253,12 +258,19 @@ public class MainController extends BaseController {
         internalNewsList.setItems(viewModel.internalNewsProperty());
 
         boolean canManageInternal = authService.canManageInternalNews();
-        internalNewsList.setCellFactory(list -> new NewsItemCell(
-                canManageInternal,
-                this::startEditInternalNews,
-                this::deleteInternalNews
-        ));
-        internalNewsList.setFixedCellSize(-1);
+        internalNewsList.setCellFactory(list -> {
+            NewsItemCell cell = new NewsItemCell(
+                    canManageInternal,
+                    this::startEditInternalNews,
+                    this::deleteInternalNews,
+                    this::onAddComment
+            );
+            cell.prefWidthProperty().bind(
+                    internalNewsList.widthProperty().subtract(16)
+            );
+
+            return cell;
+        });
     }
 
 
@@ -282,13 +294,16 @@ public class MainController extends BaseController {
     }
 
     private void loadInternalNewsAsync() {
-        Task<Void> task = new Task<>() {
+        Task<List<NewsItem>> task = new Task<>() {
             @Override
-            protected Void call() {
-                viewModel.loadInternalNews();
-                return null;
+            protected List<NewsItem> call() {
+                return viewModel.loadInternalNews(); // background OK
             }
         };
+
+        task.setOnSucceeded(e -> {
+            internalNewsList.getItems().setAll(task.getValue());
+        });
 
         task.setOnFailed(e ->
                 ErrorHandler.showTechnicalError(
@@ -336,8 +351,7 @@ public class MainController extends BaseController {
         NewsItem newsItem = new NewsItem(
                 id,
                 titleField.getText(),
-                contentArea.getText().substring(
-                        0, Math.min(100, contentArea.getText().length())),
+                contentArea.getText(),
                 contentArea.getText(),
                 "Internal",
                 LocalDateTime.now(),
@@ -354,7 +368,7 @@ public class MainController extends BaseController {
             viewModel.updateInternalNewsRuntime(newsItem);
         }
 
-        System.out.println("Saved news: " + newsItem.getTitle());
+        System.out.println("Saved news: " + contentArea.getText());
 
         clearForm();
     }
@@ -384,6 +398,7 @@ public class MainController extends BaseController {
         pdfLabel.setText("No PDF selected");
         selectedPdfPath = null;
         editingInternalNewsId = null;
+
     }
 
     private void showValidationAlert() {
@@ -515,4 +530,26 @@ public class MainController extends BaseController {
         authService.logout();
         ViewManager.setRoot(titleLabel.getScene(), View.LOGIN);
     }
+
+    public void onAddComment(NewsItem newsItem, String text) {
+
+        if (text == null || text.isBlank()) return;
+
+        Comment comment = new Comment(
+                UUID.randomUUID().toString(),
+                newsItem.getId(),
+                text,
+                LocalDateTime.now(),
+                authService.currentUserProperty().get().getId(),
+                authService.currentUserProperty().get().getUsername()
+        );
+
+        // persist
+        viewModel.addCommentRuntime(comment);
+
+        // update UI state
+        newsItem.addComment(comment);
+    }
+
+
 }

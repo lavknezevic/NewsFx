@@ -171,7 +171,9 @@
 
                         <!-- Internal News List -->
                         <StackPane VBox.vgrow="ALWAYS" styleClass="card">
-                            <ListView fx:id="internalNewsList" styleClass="news-list" />
+                            <!-- Internal News List -->
+                            <ListView fx:id="internalNewsList"
+                                      VBox.vgrow="ALWAYS" styleClass="internal-news-list"/>
                         </StackPane>
                     </VBox>
                 </center>

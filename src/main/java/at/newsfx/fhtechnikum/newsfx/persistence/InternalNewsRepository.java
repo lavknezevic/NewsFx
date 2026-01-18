@@ -29,6 +29,38 @@ public class InternalNewsRepository {
         }
     }
 
+    public List<CommentRow> findAllComments() {
+        String sql = """
+        SELECT id, news_id, text, created_at, created_by, created_by_username
+        FROM comments
+        ORDER BY created_at ASC
+        """;
+
+        List<CommentRow> result = new ArrayList<>();
+
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                result.add(new CommentRow(
+                        rs.getString("id"),
+                        rs.getString("news_id"),
+                        rs.getString("text"),
+                        rs.getTimestamp("created_at").toLocalDateTime(),
+                        rs.getLong("created_by"),
+                        rs.getString("created_by_username")
+                ));
+            }
+
+            return result;
+
+        } catch (SQLException e) {
+            throw new TechnicalException("Failed to load comments", e);
+        }
+    }
+
+
     public Optional<NewsItemRow> findById(String id) {
         String sql = """
                 SELECT id, title, summary, content, source, published_at, image_url, link_url, pdf_path, created_by
@@ -127,6 +159,46 @@ public class InternalNewsRepository {
                 null
         );
     }
+
+    public record CommentRow(
+            String id,
+            String newsId,
+            String text,
+            LocalDateTime createdAt,
+            long createdBy,
+            String createdByUsername
+    ) {}
+
+
+    public void insertComment(CommentRow row) {
+        String sql = """
+            INSERT INTO comments (
+                id,
+                news_id,
+                text,
+                created_at,
+                created_by,
+                created_by_username
+            ) VALUES (?,?,?,?,?,?)
+            """;
+
+        try (Connection con = Database.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, row.id());
+            ps.setString(2, row.newsId());
+            ps.setString(3, row.text());
+            ps.setTimestamp(4, Timestamp.valueOf(row.createdAt()));
+            ps.setLong(5, row.createdBy());
+            ps.setString(6, row.createdByUsername());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new TechnicalException("Failed to insert comment", e);
+        }
+    }
+
 
     public record NewsItemRow(
             String id,

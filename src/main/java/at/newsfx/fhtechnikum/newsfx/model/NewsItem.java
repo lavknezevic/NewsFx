@@ -1,5 +1,8 @@
 package at.newsfx.fhtechnikum.newsfx.model;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.time.LocalDateTime;
 
 public class NewsItem {
@@ -16,6 +19,8 @@ public class NewsItem {
     private final String pdfPath;
     private final String articleUrl;
 
+    private final ObservableList<Comment> comments =
+            FXCollections.observableArrayList();
 
     public NewsItem(
             String id,
@@ -85,5 +90,14 @@ public class NewsItem {
 
     public String getArticleUrl() {
         return articleUrl;
+    }
+
+
+    public ObservableList<Comment> getComments() {
+        return comments;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
     }
 }
