@@ -175,14 +175,12 @@ public class MainController extends BaseController {
         loadedTabs.clear();
         tabLoadingContainers.clear();
 
-        // Create tabs for each RSS source with lazy loading
         viewModel.externalSourcesProperty().forEach(sourceName -> {
             Tab tab = new Tab(sourceName, createSourceTabContent(sourceName));
             tab.setClosable(false);
             externalSourceTabPane.getTabs().add(tab);
         });
 
-        // Set up tab selection listener for lazy loading
         externalSourceTabPane.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldTab, newTab) -> {
                 if (newTab != null) {
@@ -415,7 +413,6 @@ public class MainController extends BaseController {
             return;
         }
 
-        // Create a popup window for the article
         Stage stage = new Stage();
         stage.setTitle(item.getTitle());
         stage.setWidth(1000);
@@ -881,8 +878,6 @@ public class MainController extends BaseController {
                 "COMMENT_ADDED|" + username + " commented on " + newsItem.getTitle()
         );
     }
-
-    // ── Networking ──
 
     private void initNetworking() {
         notificationService.setOnNotificationReceived(this::showNotificationPopup);

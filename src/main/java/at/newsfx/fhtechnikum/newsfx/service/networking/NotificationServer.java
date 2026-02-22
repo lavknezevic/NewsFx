@@ -60,10 +60,6 @@ public class NotificationServer {
         }
     }
 
-    public int getConnectedClientsCount() {
-        return clients.size();
-    }
-
     public void shutdown() {
         running = false;
         for (ClientHandler client : clients) {
@@ -94,7 +90,6 @@ public class NotificationServer {
     private class ClientHandler {
         private final Socket socket;
         private PrintWriter out;
-        private Thread readerThread;
 
         ClientHandler(Socket socket) {
             this.socket = socket;
@@ -108,31 +103,28 @@ public class NotificationServer {
                 return;
             }
 
-            readerThread = new Thread(() -> {
+            Thread reader = new Thread(() -> {
                 try (BufferedReader in = new BufferedReader(
                         new InputStreamReader(socket.getInputStream()))) {
                     String line;
                     while ((line = in.readLine()) != null) {
-                        // Message received from a client -> broadcast to all others
-                        String msg = line;
                         if (onMessageReceived != null) {
-                            onMessageReceived.accept(msg);
+                            onMessageReceived.accept(line);
                         }
                         for (ClientHandler other : clients) {
                             if (other != this) {
-                                other.send(msg);
+                                other.send(line);
                             }
                         }
                     }
-                } catch (IOException e) {
-                    // Client disconnected
+                } catch (IOException ignored) {
                 } finally {
                     close();
                     removeClient(ClientHandler.this);
                 }
             }, "NotificationServer-Client-" + socket.getRemoteSocketAddress());
-            readerThread.setDaemon(true);
-            readerThread.start();
+            reader.setDaemon(true);
+            reader.start();
         }
 
         void send(String message) {
@@ -146,8 +138,7 @@ public class NotificationServer {
                 if (!socket.isClosed()) {
                     socket.close();
                 }
-            } catch (IOException e) {
-                // ignore
+            } catch (IOException ignored) {
             }
         }
     }

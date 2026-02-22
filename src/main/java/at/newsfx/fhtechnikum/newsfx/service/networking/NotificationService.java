@@ -14,7 +14,6 @@ public class NotificationService {
     private NotificationServer server;
     private NotificationClient client;
 
-    private final BooleanProperty serverRunning = new SimpleBooleanProperty(false);
     private final BooleanProperty clientConnected = new SimpleBooleanProperty(false);
     private final IntegerProperty connectedClientsCount = new SimpleIntegerProperty(0);
 
@@ -22,10 +21,6 @@ public class NotificationService {
 
     public void setOnNotificationReceived(Consumer<String> callback) {
         this.onNotificationReceived = callback;
-    }
-
-    public BooleanProperty serverRunningProperty() {
-        return serverRunning;
     }
 
     public BooleanProperty clientConnectedProperty() {
@@ -46,7 +41,6 @@ public class NotificationService {
                 Platform.runLater(() -> connectedClientsCount.set(count))
         );
         server.start();
-        Platform.runLater(() -> serverRunning.set(true));
     }
 
     public void stopServer() {
@@ -54,10 +48,7 @@ public class NotificationService {
             server.shutdown();
             server = null;
         }
-        Platform.runLater(() -> {
-            serverRunning.set(false);
-            connectedClientsCount.set(0);
-        });
+        Platform.runLater(() -> connectedClientsCount.set(0));
     }
 
     public void connect(String host, int port) throws IOException {

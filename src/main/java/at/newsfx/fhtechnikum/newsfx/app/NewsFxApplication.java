@@ -11,14 +11,9 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-
 public class NewsFxApplication extends Application {
 
-    private static boolean serverMode = false;
-
-    public static boolean isServerMode() {
-        return serverMode;
-    }
+    private static boolean serverMode;
 
     @Override
     public void start(Stage stage) throws Exception {

@@ -13,7 +13,6 @@ public class NotificationClient {
     private final int port;
     private Socket socket;
     private PrintWriter out;
-    private Thread readerThread;
     private volatile boolean connected;
     private Consumer<String> onMessageReceived;
     private Runnable onDisconnected;
@@ -36,7 +35,7 @@ public class NotificationClient {
         out = new PrintWriter(socket.getOutputStream(), true);
         connected = true;
 
-        readerThread = new Thread(() -> {
+        Thread reader = new Thread(() -> {
             try (BufferedReader in = new BufferedReader(
                     new InputStreamReader(socket.getInputStream()))) {
                 String line;
@@ -45,8 +44,7 @@ public class NotificationClient {
                         onMessageReceived.accept(line);
                     }
                 }
-            } catch (IOException e) {
-                // Server disconnected or socket closed
+            } catch (IOException ignored) {
             } finally {
                 connected = false;
                 if (onDisconnected != null) {
@@ -54,8 +52,8 @@ public class NotificationClient {
                 }
             }
         }, "NotificationClient-Reader");
-        readerThread.setDaemon(true);
-        readerThread.start();
+        reader.setDaemon(true);
+        reader.start();
     }
 
     public void send(String message) {
