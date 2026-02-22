@@ -56,7 +56,6 @@ public class UserManagementController extends BaseController {
                     return;
                 }
 
-
                 Label name = new Label(item.getUsername());
                 name.getStyleClass().add("user-name");
                 
@@ -95,7 +94,6 @@ public class UserManagementController extends BaseController {
                         statusLabel.setText("✓ Updated role for " + item.getUsername() + " to " + newRole);
                         statusLabel.getStyleClass().removeAll("status-success", "status-error");
                         statusLabel.getStyleClass().add("status-success");
-
 
                         int idx = getIndex();
                         if (idx >= 0) {

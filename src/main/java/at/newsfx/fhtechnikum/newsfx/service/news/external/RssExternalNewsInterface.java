@@ -161,7 +161,6 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
     }
 
     private String extractCategory(Element item) {
-        // Try standard RSS category element
         NodeList categories = item.getElementsByTagName("category");
         if (categories.getLength() > 0) {
             String category = categories.item(0).getTextContent();
@@ -170,7 +169,6 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
             }
         }
         
-        // Try Dublin Core subject (used by ORF)
         NodeList dcSubjects = item.getElementsByTagName("dc:subject");
         if (dcSubjects.getLength() > 0) {
             String subject = dcSubjects.item(0).getTextContent();
@@ -179,7 +177,6 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
             }
         }
         
-        // Try subject element without namespace prefix
         NodeList subjects = item.getElementsByTagName("subject");
         if (subjects.getLength() > 0) {
             String subject = subjects.item(0).getTextContent();
@@ -195,17 +192,14 @@ public class RssExternalNewsInterface implements ExternalNewsInterface {
         String pubDate = text(item, "pubDate");
         if (pubDate != null && !pubDate.isBlank()) {
             try {
-                // Try to parse RFC 2822 format (common in RSS)
                 return parseRfc2822(pubDate);
-            } catch (Exception e) {
-                // Fall back to current time
+            } catch (Exception ignored) {
             }
         }
         return LocalDateTime.now();
     }
 
     private LocalDateTime parseRfc2822(String dateStr) {
-        // Simple RFC 2822 parser (e.g., "Mon, 13 Jan 2025 10:30:00 GMT")
         try {
             java.time.format.DateTimeFormatter formatter =
                     java.time.format.DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")

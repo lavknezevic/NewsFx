@@ -47,7 +47,6 @@ import java.util.UUID;
 
 public class MainController extends BaseController {
 
-
     private static String initialSection = "internal";
 
     public static void setInitialSection(String section) {
@@ -122,7 +121,6 @@ public class MainController extends BaseController {
     private final Set<String> loadedTabs = new HashSet<>();
     private final Map<String, VBox> tabLoadingContainers = new HashMap<>();
 
-
     @Override
     public void onViewLoaded() {
         authService = AppContext.get().authService();
@@ -196,7 +194,6 @@ public class MainController extends BaseController {
         container.setPadding(new Insets(12, 15, 15, 15));
         container.getStyleClass().add("external-pane");
         VBox.setVgrow(container, javafx.scene.layout.Priority.ALWAYS);
-
 
         VBox loadingBox = new VBox(12);
         loadingBox.setAlignment(Pos.CENTER);
@@ -477,7 +474,6 @@ public class MainController extends BaseController {
         favoritesView.setVisible(false);
         favoritesView.setManaged(false);
 
-
         Tab selectedTab = externalSourceTabPane.getSelectionModel().getSelectedItem();
         if (selectedTab != null) {
             lazyLoadTabContent(selectedTab.getText());
@@ -500,7 +496,6 @@ public class MainController extends BaseController {
         favoritesView.setVisible(true);
         favoritesView.setManaged(true);
     }
-
 
     private void bindInternalViewModel() {
         titleLabel.setText("NewsFx – Internal News");
@@ -552,7 +547,6 @@ public class MainController extends BaseController {
             viewModel.toggleFavorite(item.getId());
         }
     }
-
 
     private void loadInternalNewsAsync() {
         if (internalLoadingBox != null) {
@@ -688,10 +682,8 @@ public class MainController extends BaseController {
             notificationService.sendNotification("NEWS_UPDATED|" + newsItem.getTitle());
         }
 
-
         clearForm();
     }
-
 
     @FXML
     private void onCancelInternalNews() {

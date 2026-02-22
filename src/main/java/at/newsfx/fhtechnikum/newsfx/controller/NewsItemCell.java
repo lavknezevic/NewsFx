@@ -65,23 +65,18 @@ public class NewsItemCell extends ListCell<NewsItem> {
         VBox box = new VBox(10);
         box.getStyleClass().add("news-card");
 
-        // Header
         box.getChildren().add(createHeader(item));
 
-        // Image (if present)
         if (item.getImageUrl() != null && !item.getImageUrl().isBlank()) {
             box.getChildren().add(createImageView(item.getImageUrl()));
         }
 
-        // Summary
         box.getChildren().add(createSummary(item.getSummary()));
 
-        // Reactions (internal news only)
         if (!item.isExternal() && reactionBarFactory != null) {
             box.getChildren().add(reactionBarFactory.createReactionsBar(ReactionTargetType.NEWS, item.getId()));
         }
 
-        // Article link
         String articleUrl = item.getArticleUrl() != null && !item.getArticleUrl().isBlank()
                 ? item.getArticleUrl()
                 : item.getLinkUrl();
@@ -89,17 +84,14 @@ public class NewsItemCell extends ListCell<NewsItem> {
             box.getChildren().add(createArticleLink(articleUrl));
         }
 
-        // PDF button
         if (item.getPdfPath() != null && !item.getPdfPath().isBlank()) {
             box.getChildren().add(createPdfButton(item.getPdfPath()));
         }
 
-        // Comments section (internal news only)
         if (!item.isExternal()) {
             box.getChildren().add(commentSectionFactory.createCommentsSection(item));
         }
 
-        // Action buttons
         HBox actions = createActionButtons(item);
         if (!actions.getChildren().isEmpty()) {
             box.getChildren().add(actions);
@@ -161,12 +153,10 @@ public class NewsItemCell extends ListCell<NewsItem> {
         actions.getStyleClass().add("news-card-actions");
         actions.setAlignment(Pos.CENTER_RIGHT);
 
-        // Favorite button
         if (enableFavorites && !item.isExternal()) {
             actions.getChildren().add(createFavoriteButton(item));
         }
 
-        // Edit/Delete buttons
         if (enableInternalActions && !item.isExternal()) {
             if (onEdit != null) {
                 Button editButton = new Button("Edit");
@@ -190,7 +180,6 @@ public class NewsItemCell extends ListCell<NewsItem> {
         starButton.setOnAction(e -> {
             if (onFavoriteToggle != null) {
                 onFavoriteToggle.accept(item);
-                // Provide immediate feedback
                 boolean nowFav = isFavorited != null && isFavorited.test(item.getId());
                 starButton.setText(nowFav ? "★" : "☆");
                 starButton.getStyleClass().removeAll("star-filled", "star-empty");

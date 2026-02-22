@@ -86,7 +86,6 @@ public class CommentSectionFactory {
                 VBox box = new VBox(4, meta, text);
                 box.getStyleClass().add("comment-item");
 
-                // Reactions below each comment
                 if (reactionBarFactory != null) {
                     box.getChildren().add(
                         reactionBarFactory.createReactionsBar(ReactionTargetType.COMMENT, comment.getId())

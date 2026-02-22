@@ -60,7 +60,6 @@ public class InternalNewsRepository {
         }
     }
 
-
     public Optional<NewsItemRow> findById(String id) {
         String sql = """
                 SELECT id, title, summary, content, source, published_at, image_url, link_url, pdf_path, created_by
@@ -169,7 +168,6 @@ public class InternalNewsRepository {
             String createdByUsername
     ) {}
 
-
     public void insertComment(CommentRow row) {
         String sql = """
             INSERT INTO comments (
@@ -198,7 +196,6 @@ public class InternalNewsRepository {
             throw new TechnicalException("Failed to insert comment", e);
         }
     }
-
 
     public record NewsItemRow(
             String id,

@@ -15,7 +15,6 @@ public class StartController extends BaseController {
     @FXML
     private Button userManagementButton;
 
-
     @Override
     public void onViewLoaded() {
         String username = AppContext.get().authService().currentUserProperty().get().getUsername();

@@ -8,8 +8,6 @@ import at.newsfx.fhtechnikum.newsfx.service.news.external.ExternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.RssExternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.RssSource;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsInterface;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -19,7 +17,6 @@ import java.util.Map;
 
 public class MainViewModel {
 
-    private final StringProperty title = new SimpleStringProperty();
     private final ExternalNewsInterface externalNewsInterface;
     private final InternalNewsInterface internalNewsInterface;
     private final FavoritesService favoritesService;
@@ -35,13 +32,11 @@ public class MainViewModel {
     private final Map<String, ObservableList<NewsItem>> externalNewsBySource = new HashMap<>();
     private final ObservableList<String> externalSources = FXCollections.observableArrayList();
 
-
     public MainViewModel(ExternalNewsInterface externalNewsInterface, InternalNewsInterface internalNewsInterface, FavoritesService favoritesService, FavoritesRepository favoritesRepository) {
         this.externalNewsInterface = externalNewsInterface;
         this.internalNewsInterface = internalNewsInterface;
         this.favoritesService = favoritesService;
         this.favoritesRepository = favoritesRepository;
-        title.set("Welcome to NewsFx");
         initializeExternalSources();
     }
 
@@ -127,6 +122,4 @@ public class MainViewModel {
     public void addCommentRuntime(Comment comment) {
         internalNewsInterface.addComment(comment);
     }
-
-
 }
