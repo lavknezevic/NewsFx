@@ -1,9 +1,11 @@
 package at.newsfx.fhtechnikum.newsfx.controller;
 
+import at.newsfx.fhtechnikum.newsfx.config.AppConfig;
 import at.newsfx.fhtechnikum.newsfx.config.AppContext;
 import at.newsfx.fhtechnikum.newsfx.model.Comment;
 import at.newsfx.fhtechnikum.newsfx.model.NewsItem;
 import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
+import at.newsfx.fhtechnikum.newsfx.service.networking.NotificationService;
 import at.newsfx.fhtechnikum.newsfx.service.reaction.ReactionService;
 import at.newsfx.fhtechnikum.newsfx.service.news.external.RssExternalNewsInterface;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsInterface;
@@ -73,6 +75,11 @@ public class MainController extends BaseController {
     @FXML
     private Button userManagementButton;
 
+    @FXML
+    private Label networkStatusLabel;
+    @FXML
+    private Button connectButton;
+
     private String selectedPdfPath;
 
     private String selectedImagePath;
@@ -81,6 +88,7 @@ public class MainController extends BaseController {
     private AuthService authService;
     private ReactionService reactionService;
     private RssExternalNewsInterface rssService;
+    private NotificationService notificationService;
 
     @FXML
     private Label titleLabel;
@@ -119,6 +127,7 @@ public class MainController extends BaseController {
     public void onViewLoaded() {
         authService = AppContext.get().authService();
         reactionService = AppContext.get().reactionService();
+        notificationService = AppContext.get().notificationService();
 
         rssService = new RssExternalNewsInterface();
         InternalNewsInterface internalNewsInterface = AppContext.get().internalNewsService();
@@ -134,6 +143,7 @@ public class MainController extends BaseController {
         bindInternalViewModel();
         bindExternalViewModel();
         bindFavoritesViewModel();
+        initNetworking();
 
         internalNewsForm.setVisible(false);
         internalNewsForm.setManaged(false);
@@ -675,8 +685,10 @@ public class MainController extends BaseController {
 
         if (editingInternalNewsId == null) {
             viewModel.addInternalNewsRuntime(newsItem);
+            notificationService.sendNotification("NEWS_CREATED|" + newsItem.getTitle());
         } else {
             viewModel.updateInternalNewsRuntime(newsItem);
+            notificationService.sendNotification("NEWS_UPDATED|" + newsItem.getTitle());
         }
 
 
@@ -824,6 +836,7 @@ public class MainController extends BaseController {
             }
 
             viewModel.deleteInternalNewsRuntime(item.getId());
+            notificationService.sendNotification("NEWS_DELETED|" + item.getTitle());
         } catch (UserException e) {
             ErrorHandler.showUserError(e.getMessage());
         } catch (Exception e) {
@@ -862,7 +875,65 @@ public class MainController extends BaseController {
         viewModel.addCommentRuntime(comment);
 
         newsItem.addComment(comment);
+
+        String username = authService.currentUserProperty().get().getUsername();
+        notificationService.sendNotification(
+                "COMMENT_ADDED|" + username + " commented on " + newsItem.getTitle()
+        );
     }
 
+    // ── Networking ──
 
+    private void initNetworking() {
+        notificationService.setOnNotificationReceived(this::showNotificationPopup);
+
+        notificationService.clientConnectedProperty().addListener((obs, oldVal, connected) -> {
+            if (connected) {
+                networkStatusLabel.setText("Connected");
+                connectButton.setVisible(false);
+                connectButton.setManaged(false);
+            } else {
+                networkStatusLabel.setText("Disconnected");
+                connectButton.setVisible(true);
+                connectButton.setManaged(true);
+            }
+        });
+
+        tryConnect();
+    }
+
+    private void tryConnect() {
+        int port = AppConfig.notificationPort();
+        try {
+            notificationService.connect("localhost", port);
+            networkStatusLabel.setText("Connected");
+            connectButton.setVisible(false);
+            connectButton.setManaged(false);
+
+            String username = authService.currentUserProperty().get().getUsername();
+            notificationService.sendNotification("USER_JOINED|" + username);
+        } catch (Exception e) {
+            networkStatusLabel.setText("Offline");
+            connectButton.setVisible(true);
+            connectButton.setManaged(true);
+        }
+    }
+
+    @FXML
+    private void onConnect() {
+        tryConnect();
+    }
+
+    private void showNotificationPopup(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Network Notification");
+        alert.setHeaderText(null);
+        alert.setContentText(message.replace('|', '\n'));
+        alert.show();
+
+        if (message.startsWith("NEWS_CREATED") || message.startsWith("NEWS_UPDATED")
+                || message.startsWith("NEWS_DELETED")) {
+            loadInternalNewsAsync();
+        }
+    }
 }

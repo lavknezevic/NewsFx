@@ -8,6 +8,7 @@ import at.newsfx.fhtechnikum.newsfx.persistence.UserRepository;
 import at.newsfx.fhtechnikum.newsfx.security.PasswordHasher;
 import at.newsfx.fhtechnikum.newsfx.service.FavoritesService;
 import at.newsfx.fhtechnikum.newsfx.service.auth.AuthService;
+import at.newsfx.fhtechnikum.newsfx.service.networking.NotificationService;
 import at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsService;
 import at.newsfx.fhtechnikum.newsfx.service.reaction.ReactionService;
 import at.newsfx.fhtechnikum.newsfx.service.user.UserService;
@@ -25,6 +26,7 @@ public final class AppContext {
     private final InternalNewsService internalNewsService;
     private final FavoritesService favoritesService;
     private final ReactionService reactionService;
+    private final NotificationService notificationService;
 
     private AppContext() {
         Database.initSchema();
@@ -38,6 +40,7 @@ public final class AppContext {
         this.internalNewsService = new InternalNewsService(authService, internalNewsRepository, favoritesRepository);
         this.favoritesService = new FavoritesService(favoritesRepository);
         this.reactionService = new ReactionService(authService, reactionRepository);
+        this.notificationService = new NotificationService();
 
         seedUsersIfEmpty();
     }
@@ -78,6 +81,10 @@ public final class AppContext {
 
     public ReactionService reactionService() {
         return reactionService;
+    }
+
+    public NotificationService notificationService() {
+        return notificationService;
     }
 
     private void seedUsersIfEmpty() {

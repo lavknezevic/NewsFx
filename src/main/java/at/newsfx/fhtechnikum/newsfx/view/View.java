@@ -5,7 +5,8 @@ public enum View {
     LOGIN("/view/LoginView.fxml"),
     REGISTER("/view/RegisterView.fxml"),
     MAIN("/view/MainView.fxml"),
-    USER_MANAGEMENT("/view/UserManagementView.fxml");
+    USER_MANAGEMENT("/view/UserManagementView.fxml"),
+    SERVER("/view/ServerView.fxml");
 
     private final String fxmlPath;
 

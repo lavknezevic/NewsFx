@@ -185,4 +185,8 @@ public final class AppConfig {
     public static String dbPassword() {
         return getOptional("db.password", "");
     }
+
+    public static int notificationPort() {
+        return getInt("notification.port", 9090);
+    }
 }

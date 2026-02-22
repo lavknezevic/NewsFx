@@ -49,6 +49,15 @@
                     maxWidth="Infinity"
                     styleClass="nav-button"/>
 
+                <Label text="Network" styleClass="sidebar-section"/>
+
+                <Label fx:id="networkStatusLabel" text="Offline" styleClass="meta"/>
+                <Button fx:id="connectButton"
+                    text="Connect"
+                    onAction="#onConnect"
+                    maxWidth="Infinity"
+                    styleClass="nav-button"/>
+
                 <Label text="Admin" styleClass="sidebar-section"/>
 
                 <Button text="User Management"

@@ -14,11 +14,21 @@ import javafx.stage.Stage;
 
 public class NewsFxApplication extends Application {
 
+    private static boolean serverMode = false;
+
+    public static boolean isServerMode() {
+        return serverMode;
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
+        serverMode = getParameters().getRaw().contains("--server");
+
         AppContext.get();
 
-        Parent root = ViewManager.load(View.LOGIN);
+        Parent root = serverMode
+                ? ViewManager.load(View.SERVER)
+                : ViewManager.load(View.LOGIN);
 
         Scene scene = new Scene(root, AppConfig.windowWidth(), AppConfig.windowHeight());
 
@@ -30,11 +40,19 @@ public class NewsFxApplication extends Application {
             new Image(ResourceUtil.get("/icons/newsfx.png").toExternalForm())
         );
 
-        stage.setTitle(AppConfig.windowTitle());
+        String title = serverMode
+                ? AppConfig.windowTitle() + " [SERVER]"
+                : AppConfig.windowTitle();
+        stage.setTitle(title);
         stage.setMinWidth(AppConfig.windowMinWidth());
         stage.setMinHeight(AppConfig.windowMinHeight());
         stage.setScene(scene);
         stage.show();
+    }
+
+    @Override
+    public void stop() {
+        AppContext.get().notificationService().shutdown();
     }
 
     public static void main(String[] args) {

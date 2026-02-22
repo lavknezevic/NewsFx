@@ -13,6 +13,7 @@ Zusätzlich gibt es ein einfaches Login/Registrierungs-Feature inkl. Rollen (USE
   - **with favorization**
 - **Login/Register/Logout**: Accounts lokal in einer DB, Passwörter werden gehasht.
 - **User Management (Admin)**: Rollen für User verwalten.
+- **TCP Networking**: Echtzeit-Benachrichtigungen zwischen mehreren App-Instanzen via TCP Sockets (`ServerSocket`/`Socket`). Eine Instanz läuft als Server, die anderen verbinden sich als Clients. Aktionen wie News erstellen/bearbeiten/löschen und Kommentare werden live an alle verbundenen Clients gesendet.
 
 ## Demo Accounts
 
@@ -39,15 +40,50 @@ Optional:
 
 ### Windows (PowerShell)
 
-- App starten:
+- App starten (Client):
 	- `./mvnw.cmd clean javafx:run`
+- App starten (Server):
+	- `./mvnw.cmd clean javafx:run -Djavafx.args="--server"`
 
 ### macOS / Linux
 
-- App starten:
+- App starten (Client):
 	- `./mvnw clean javafx:run`
+- App starten (Server):
+	- `./mvnw clean javafx:run -Djavafx.args="--server"`
 
 Hinweis: Die Main-Klasse ist in Maven bereits konfiguriert (JavaFX Maven Plugin).
+
+### Multi-Instanz Betrieb (TCP Networking)
+
+Für die Echtzeit-Benachrichtigungen werden mehrere Instanzen benötigt:
+
+1. **Server-Instanz starten**: Mit dem Argument `--server` starten. Die Server-Instanz zeigt ein eigenes Dashboard (kein Login nötig) mit Status, Port, verbundene Clients und einem Message-Log.
+2. **Client-Instanzen starten**: Normal ohne Argument starten. Clients versuchen beim Login automatisch eine Verbindung zum Server auf `localhost:9090`. Falls der Server noch nicht läuft, kann über den **"Connect"-Button** in der Sidebar manuell verbunden werden.
+
+#### IntelliJ Run Configurations
+
+Drei Run Configurations anlegen (alle mit Main-Klasse `NewsFxApplication`):
+
+| Name | Program Arguments |
+|------|-------------------|
+| `NewsFx Server` | `--server` |
+| `NewsFx Client 1` | *(leer)* |
+| `NewsFx Client 2` | *(leer)* |
+
+**Reihenfolge egal** — Server zuerst oder Clients zuerst, dann über "Connect" verbinden.
+
+#### TCP Protokoll (Newline-delimited)
+
+```
+NEWS_CREATED|<title>
+NEWS_UPDATED|<title>
+NEWS_DELETED|<title>
+COMMENT_ADDED|<username> commented on <title>
+USER_JOINED|<username>
+```
+
+Clients erhalten bei eingehenden News-Events automatisch eine Popup-Benachrichtigung und die News-Liste wird aktualisiert.
 
 ## Build & Tests
 
@@ -103,6 +139,12 @@ Die App liest ihre Konfiguration aus [src/main/resources/application.properties]
 | `demo.users.user.username` | User Username | `user` |
 | `demo.users.user.password` | User Passwort | `user` |
 
+### Networking
+
+| Key | Beschreibung | Default |
+|-----|--------------|---------|
+| `notification.port` | TCP-Port für den Notification-Server | `9090` |
+
 ### Datenbank
 
 | Key | Beschreibung | Default |
@@ -135,6 +177,7 @@ Die App liest ihre Konfiguration aus [src/main/resources/application.properties]
 	- External RSS: `at.newsfx.fhtechnikum.newsfx.service.news.external.RssExternalNewsInterface`
 	- Internal (DB): `at.newsfx.fhtechnikum.newsfx.service.news.internal.InternalNewsService`
 	- Auth: `at.newsfx.fhtechnikum.newsfx.service.auth.AuthService`
+	- TCP Networking: `at.newsfx.fhtechnikum.newsfx.service.networking.*` (`NotificationServer`, `NotificationClient`, `NotificationService`)
 - Persistence
 	- DB/Schema: `at.newsfx.fhtechnikum.newsfx.persistence.Database`
 	- Repositories: `at.newsfx.fhtechnikum.newsfx.persistence.*Repository`
